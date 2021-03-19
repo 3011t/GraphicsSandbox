@@ -24,6 +24,7 @@
     <ProjectGuid>{eaeff5c8-464b-48f5-b273-d7f0eaabfdc7}</ProjectGuid>
     <RootNamespace>VSOpenGLTemplate</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GraphicsSandbox</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -165,6 +166,12 @@
   <ItemGroup>
     <ClCompile Include="..\third-party\Glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sandbox.cpp" />
+    <ClCompile Include="ShaderLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sandbox.h" />
+    <ClInclude Include="ShaderLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

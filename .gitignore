@@ -31,7 +31,7 @@
 *.out
 *.app
 
-.vs/*
-VS-OpenGL-Template/obj/*
+GraphicsSandbox/.vs/*
+GraphicsSandbox/obj/*
 *.ilk
 *.pdb
