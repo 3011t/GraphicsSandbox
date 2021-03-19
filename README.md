@@ -1,5 +1,5 @@
 # GraphicsSandbox
-A repository that I use for playing around with computer graphics.
+A repository that I use for playing around with real-time computer graphics.
 
 # Libraries used
  - GLFW (https://www.glfw.org/)
