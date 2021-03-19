@@ -1,5 +1,5 @@
-# VS-OpenGL-Template
-Template containing a Visual Studio Solution that's prepared to work out of the box with OpenGL.
+# GraphicsSandbox
+A repository that I use for playing around with computer graphics.
 
 # Libraries used
  - GLFW (https://www.glfw.org/)
