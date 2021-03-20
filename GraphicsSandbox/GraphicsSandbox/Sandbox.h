@@ -6,6 +6,19 @@
 #include <glm/glm.hpp>
 #include <IL/il.h>
 
+// stdlib includes
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <fstream>
+
+// Local includes
+//#include "Shader.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
+
 class Sandbox {
 public:
 	Sandbox();
