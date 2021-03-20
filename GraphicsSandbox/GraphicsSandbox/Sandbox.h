@@ -8,7 +8,11 @@
 
 class Sandbox {
 public:
+	Sandbox();
 
+	bool Init();
+	void Run();
+	void Uninit();
 private:
-
+	GLFWwindow* window;
 };

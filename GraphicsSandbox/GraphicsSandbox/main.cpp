@@ -11,6 +11,14 @@
 #include "Sandbox.h"
 
 int main() {
+    Sandbox box;
+
+    if (!box.Init()) {
+        printf("Initialisation failed.");
+    }
+
+    box.Run();
+    box.Uninit();
 
     return 0;
 }
