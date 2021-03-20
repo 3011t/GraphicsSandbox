@@ -10,22 +10,17 @@ void GLMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, G
 }
 
 Sandbox::Sandbox() {
-
-}
-
-bool Sandbox::Init() {
-
     glfwSetErrorCallback(glfwErrorCallback);
 
     /* Initialize the library */
     if (!glfwInit())
-        return false;
+        m_InitStatus = false;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window) {
+    m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    if (!m_Window) {
         glfwTerminate();
-        return false;
+        m_InitStatus = false;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -33,11 +28,11 @@ bool Sandbox::Init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(m_Window);
 
     if (!gladLoadGL()) {
         glfwTerminate();
-        return false;
+        m_InitStatus = false;
     }
 
     std::cout << glGetString(GL_VERSION) << std::endl;
@@ -46,16 +41,24 @@ bool Sandbox::Init() {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(GLMessageCallback, nullptr);
 
-    return true;
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    m_InitStatus = true;
+}
+
+Sandbox::~Sandbox() {
+    glfwDestroyWindow(m_Window);
+    glfwTerminate();
 }
 
 void Sandbox::Run() {
 
     float positions[] = {
-         0.5f, -0.5f,
-         0.5f,  0.5f,
-        -0.5f,  0.5f,
-        -0.5f, -0.5f,
+         0.5f, -0.5f, 1.0f, 0.0f,
+         0.5f,  0.5f, 1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f
     };
 
     uint32_t indices[] = {
@@ -64,49 +67,49 @@ void Sandbox::Run() {
     };
 
     VertexArray va;
-    VertexBuffer vb(positions, 8 * sizeof(float));
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
     vb.Bind();
 
     VertexBufferLayout layout;
+    layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
     ib.Bind();
 
-    Shader shader("02vertex.glsl", "01fragment.glsl");
+    Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
     shader.Bind();
     shader.SetUniform4f("u_Colour", 0.1f, 0.2f, 0.6f, 1.0f);
+
+    Texture texture("textures/BrickWall.jpg");
+    texture.Bind();
+    shader.SetUniform1i("u_Texture", 0);
+
+    Renderer renderer;
 
     float r = 0.0f;
     float inc = 0.01f;
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(m_Window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
 
         shader.Bind();
         shader.SetUniform4f("u_Colour", r, 0.2f, 0.6f, 1.0f);
 
-        va.Bind();
-        ib.Bind();
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        renderer.Draw(va, ib, shader);
 
         if (r > 1.0f || r < 0.0f) inc = -inc;
 
         r += inc;
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(m_Window);
 
         /* Poll for and process events */
         glfwPollEvents();
     }
-}
-
-void Sandbox::Uninit() {
-    glfwTerminate();
 }

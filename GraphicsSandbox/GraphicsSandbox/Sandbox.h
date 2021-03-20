@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <IL/il.h>
 
 // stdlib includes
 #include <iostream>
@@ -18,14 +17,17 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Renderer.h"
+#include "Texture.h"
 
 class Sandbox {
 public:
 	Sandbox();
+	~Sandbox();
 
-	bool Init();
 	void Run();
-	void Uninit();
+	bool GetStatus() { return m_InitStatus; }
 private:
-	GLFWwindow* window;
+	GLFWwindow* m_Window;
+	bool m_InitStatus;
 };

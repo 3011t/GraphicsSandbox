@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <IL/il.h>
 
 // Standard library includes
 #include <cstdio>
@@ -13,12 +12,11 @@
 int main() {
     Sandbox box;
 
-    if (!box.Init()) {
+    if (!box.GetStatus()) {
         printf("Initialization failed.");
     }
 
     box.Run();
-    box.Uninit();
 
     return 0;
 }
