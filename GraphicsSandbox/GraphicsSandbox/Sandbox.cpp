@@ -1,8 +1,15 @@
 #include "Sandbox.h"
 
+// My naming convention with these function is terrible
+// TODO: Fix
 void glfwErrorCallback(int error, const char* description)
 {
     printf("GLFW Error %i: %s\n", error, description);
+}
+
+void glfwFramebufferCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+
 }
 
 void GLMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
@@ -35,14 +42,16 @@ Sandbox::Sandbox() {
         m_InitStatus = false;
     }
 
+    //glfwSetFramebufferSizeCallback(m_Window, glfwFramebufferCallback);
+
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     // Make OpenGL print debug messages
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(GLMessageCallback, nullptr);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     m_InitStatus = true;
 }
@@ -55,19 +64,19 @@ Sandbox::~Sandbox() {
 void Sandbox::Run() {
 
     float positions[] = {
-         0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
         -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
-         0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
     };
 
     uint32_t indices[] = {
-        0, 1, 2,
-        1, 3, 2,
+        2, 0, 1,
+        2, 1, 3,
         4, 5, 6,
         5, 7, 6,
         4, 5, 0,
@@ -89,15 +98,14 @@ void Sandbox::Run() {
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
-    IndexBuffer ib(indices, 36);
+    IndexBuffer ib(indices, 6); // <- should be 40, disabled for ease of use for now
     ib.Bind();
 
-    glm::mat4 proj = glm::perspective(glm::radians(70.0f), (16.0f / 9.0f), 0.1f, 10.0f);
+    //glm::mat4 proj = glm::perspective(glm::radians(70.0f), (16.0f / 9.0f), 0.01f, 100.0f);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
     shader.Bind();
-    shader.SetUniform4f("u_Colour", 0.1f, 0.2f, 0.6f, 1.0f);
-    shader.SetUniformMat4f("u_MVP", proj);
+    //shader.SetUniform4f("u_Colour", 0.1f, 0.2f, 0.6f, 1.0f);
 
     Texture texture("textures/BrickWall.jpg");
     texture.Bind();
@@ -115,7 +123,7 @@ void Sandbox::Run() {
         renderer.Clear();
 
         shader.Bind();
-        shader.SetUniform4f("u_Colour", r, 0.2f, 0.6f, 1.0f);
+        //shader.SetUniform4f("u_Colour", r, 0.2f, 0.6f, 1.0f);
 
         renderer.Draw(va, ib, shader);
 
