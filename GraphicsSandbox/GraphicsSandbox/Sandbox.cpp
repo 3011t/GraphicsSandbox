@@ -17,7 +17,7 @@ Sandbox::Sandbox() {
         m_InitStatus = false;
 
     /* Create a windowed mode window and its OpenGL context */
-    m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    m_Window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
     if (!m_Window) {
         glfwTerminate();
         m_InitStatus = false;
@@ -55,32 +55,49 @@ Sandbox::~Sandbox() {
 void Sandbox::Run() {
 
     float positions[] = {
-         0.5f, -0.5f, 1.0f, 0.0f,
-         0.5f,  0.5f, 1.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 0.0f
+         0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
     };
 
     uint32_t indices[] = {
         0, 1, 2,
-        0, 2, 3
+        1, 3, 2,
+        4, 5, 6,
+        5, 7, 6,
+        4, 5, 0,
+        5, 1, 0,
+        1, 5, 3,
+        5, 7, 3,
+        6, 7, 2,
+        7, 3, 2,
+        4, 0, 6,
+        0, 2, 6
     };
 
     VertexArray va;
-    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+    VertexBuffer vb(positions, 8 * 5 * sizeof(float));
     vb.Bind();
 
     VertexBufferLayout layout;
-    layout.Push<float>(2);
+    layout.Push<float>(3);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
-    IndexBuffer ib(indices, 6);
+    IndexBuffer ib(indices, 36);
     ib.Bind();
+
+    glm::mat4 proj = glm::perspective(glm::radians(70.0f), (16.0f / 9.0f), 0.1f, 10.0f);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
     shader.Bind();
     shader.SetUniform4f("u_Colour", 0.1f, 0.2f, 0.6f, 1.0f);
+    shader.SetUniformMat4f("u_MVP", proj);
 
     Texture texture("textures/BrickWall.jpg");
     texture.Bind();
