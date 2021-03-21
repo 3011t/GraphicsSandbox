@@ -21,6 +21,7 @@ public:
 	Camera();
 
 	void SetMovementSpeed(float speed) { m_MovementSpeed = speed; }
+	void SetSensitivity(float sensitivity) { m_Sensitivity = sensitivity; }
 	void SetView(const glm::vec3& eye, const glm::vec3& lookAt, const glm::vec3& up);
 	const glm::mat4& GetView() const { return m_View; }
 	const glm::mat4& GetInvView() const { return m_ViewInverse; }

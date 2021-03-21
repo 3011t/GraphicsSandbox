@@ -12,13 +12,13 @@
 #include <fstream>
 
 // Local includes
-//#include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
 #include "Renderer.h"
 #include "Texture.h"
+#include "Camera.h"
 
 class Sandbox {
 public:
@@ -28,6 +28,11 @@ public:
 	void Run();
 	bool GetStatus() { return m_InitStatus; }
 private:
+	void ProcessInput(float dt);
+
 	GLFWwindow* m_Window;
 	bool m_InitStatus;
+	Camera m_Camera;
+	double m_PrevMouseX;
+	double m_PrevMouseY;
 };
