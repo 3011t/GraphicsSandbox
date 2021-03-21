@@ -2,7 +2,7 @@
 A repository that I use for playing around with real-time computer graphics.
 
 The project currently targets OpenGL v4.6, though the version can be lowered in Sandbox constructor to v4.3 with no other changes. 
-The version can go as low as v3.3 is you disable OpenGL debug prints.
+The version should be able to go as low as v3.3 is you disable OpenGL debug prints.
 
 # Known issues & TODOs
 - Add Mesh and Model classes
