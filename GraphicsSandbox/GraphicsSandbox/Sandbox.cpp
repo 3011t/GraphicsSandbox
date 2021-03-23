@@ -112,9 +112,9 @@ Sandbox::Sandbox() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    m_Camera.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.01f, 100.0f);
+    m_Camera.SetProjection(glm::radians(70.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
     m_Camera.SetView(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    m_Camera.SetMovementSpeed(1.0f);
+    //m_Camera.SetMovementSpeed(1.0f);
     m_Camera.SetSensitivity(0.01f);
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
@@ -129,7 +129,7 @@ Sandbox::~Sandbox() {
 
 void Sandbox::Run() {
 
-    float positions[] = {
+    float positionsCube[] = {
          0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
         -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
          0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
@@ -140,7 +140,7 @@ void Sandbox::Run() {
         -0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
     };
 
-    uint32_t indices[] = {
+    uint32_t indicesCube[] = {
         2, 0, 1,
         2, 1, 3,
         4, 5, 6,
@@ -155,24 +155,83 @@ void Sandbox::Run() {
         0, 2, 6
     };
 
+    float positionsFloor[] = {
+        -2.0f,  0.0f,  2.0f,
+        -1.0f,  0.0f,  2.0f,
+         0.0f,  0.0f,  2.0f,
+         1.0f,  0.0f,  2.0f,
+         2.0f,  0.0f,  2.0f,
+
+        -2.0f,  0.0f,  1.0f,
+        -1.0f,  0.0f,  1.0f,
+         0.0f,  0.0f,  1.0f,
+         1.0f,  0.0f,  1.0f,
+         2.0f,  0.0f,  1.0f,
+
+        -2.0f,  0.0f,  0.0f,
+        -1.0f,  0.0f,  0.0f,
+         0.0f,  0.0f,  0.0f,
+         1.0f,  0.0f,  0.0f,
+         2.0f,  0.0f,  0.0f,
+
+        -2.0f,  0.0f, -1.0f,
+        -1.0f,  0.0f, -1.0f,
+         0.0f,  0.0f, -1.0f,
+         1.0f,  0.0f, -1.0f,
+         2.0f,  0.0f, -1.0f,
+
+        -2.0f,  0.0f, -2.0f,
+        -1.0f,  0.0f, -2.0f,
+         0.0f,  0.0f, -2.0f,
+         1.0f,  0.0f, -2.0f,
+         2.0f,  0.0f, -2.0f,
+    };
+
+    uint32_t indicesFloor[] = {
+         0,  6,  1,  0,  5,  6,
+         1,  7,  2,  1,  6,  7,
+         2,  8,  3,  2,  7,  8,
+         3,  9,  4,  3,  8,  9,
+
+         5, 11,  6,  5, 10, 11,
+         6, 12,  7,  6, 11, 12,
+         7, 13,  8,  7, 12, 13,
+         8, 14,  9,  8, 13, 14,
+
+        10, 16, 11, 10, 15, 16,
+        11, 17, 12, 11, 16, 17,
+        12, 18, 13, 12, 17, 18,
+        13, 19, 14, 13, 18, 19,
+
+        15, 21, 16, 15, 20, 21,
+        16, 22, 17, 16, 21, 22,
+        17, 23, 18, 17, 22, 23,
+        18, 24, 19, 18, 23, 24
+    };
+
+    VertexArray va_floor;
+    VertexBuffer vb_floor(positionsFloor, 25 * 3 * sizeof(float));
+
+    VertexBufferLayout layoutFloor;
+    layoutFloor.Push<float>(3);
+    va_floor.AddBuffer(vb_floor, layoutFloor);
+
+    IndexBuffer ib_floor(indicesFloor, 6 * 16);
+
     VertexArray va;
-    VertexBuffer vb(positions, 8 * 5 * sizeof(float));
-    vb.Bind();
+    VertexBuffer vb(positionsCube, 8 * 5 * sizeof(float));
 
-    VertexBufferLayout layout;
-    layout.Push<float>(3);
-    layout.Push<float>(2);
-    va.AddBuffer(vb, layout);
+    VertexBufferLayout layoutCube;
+    layoutCube.Push<float>(3);
+    layoutCube.Push<float>(2);
+    va.AddBuffer(vb, layoutCube);
 
-    IndexBuffer ib(indices, 40); // <- should be 40, disabled for ease of use for now
-    ib.Bind();
+    IndexBuffer ib(indicesCube, 40);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
-    shader.Bind();
 
     Texture texture("textures/BrickWall.jpg");
     texture.Bind();
-    shader.SetUniform1i("u_Texture", 0);
 
     Renderer renderer;
 
@@ -192,11 +251,26 @@ void Sandbox::Run() {
         glfwPollEvents();
         ProcessInput(dt);
 
+        if (m_DebugMousePosChanged) {
+            const glm::vec4& cameraPos = m_Camera.GetCameraPosition();
+            printf("Current position: X: %f; Y: %f; Z: %f\n", cameraPos.x, cameraPos.y, cameraPos.z);
+            m_DebugMousePosChanged = false;
+        }
+
         /* Render here */
         shader.Bind();
         shader.SetUniformMat4f("u_MVP", m_Camera.CalculateMVP(glm::mat4(0.5f)));
+        shader.SetUniform1i("u_Texture", 0);
+        shader.SetUniform4f("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
 
         renderer.Clear();
+        shader.Bind();
+        shader.SetUniform1i("u_UseTexture", 0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        renderer.Draw(va_floor, ib_floor, shader);
+        shader.Bind();
+        shader.SetUniform1i("u_UseTexture", 1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         renderer.Draw(va, ib, shader);
 
         /* Swap front and back buffers */
@@ -206,23 +280,30 @@ void Sandbox::Run() {
 
 void Sandbox::ProcessInput(float dt) {
     int dir = (int)MovementDirection::None;
-    if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Forward;
-
-    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS)
+        m_DebugMousePosChanged = true;
+    }
+    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Backward;
-
-    if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS)
+        m_DebugMousePosChanged = true;
+    }
+    if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Left;
-
-    if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS)
+        m_DebugMousePosChanged = true;
+    }
+    if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Right;
-
-    if (glfwGetKey(m_Window, GLFW_KEY_R) == GLFW_PRESS)
+        m_DebugMousePosChanged = true;
+    }
+    if (glfwGetKey(m_Window, GLFW_KEY_R) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Up;
-
-    if (glfwGetKey(m_Window, GLFW_KEY_F) == GLFW_PRESS)
+        m_DebugMousePosChanged = true;
+    }
+    if (glfwGetKey(m_Window, GLFW_KEY_F) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Down;
+        m_DebugMousePosChanged = true;
+    }
 
     double mouse_x, mouse_y;
     glfwGetCursorPos(m_Window, &mouse_x, &mouse_y);

@@ -35,10 +35,10 @@ void Camera::Move(MovementDirection direction, const glm::vec2& mouseMove, float
 	glm::vec4& position = view[3];
 	position = m_ViewInverse[3];
 	if ((int)direction & (int)MovementDirection::Forward)
-		position += dir * m_MovementSpeed * dt;
+		position -= dir * m_MovementSpeed * dt;
 
 	if ((int)direction & (int)MovementDirection::Backward)
-		position -= dir * m_MovementSpeed * dt;
+		position += dir * m_MovementSpeed * dt;
 
 	if ((int)direction & (int)MovementDirection::Left)
 		position -= aside * m_MovementSpeed * dt;

@@ -35,4 +35,5 @@ private:
 	Camera m_Camera;
 	double m_PrevMouseX;
 	double m_PrevMouseY;
+	bool m_DebugMousePosChanged;
 };
