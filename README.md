@@ -6,10 +6,8 @@ The version should be able to go as low as v3.3 is you disable OpenGL debug prin
 
 # Known issues & TODOs
 - Add Mesh and Model classes
-- The transforms are acting a bit weird(Camera class)
 - Clean up Sandbox.cpp(it's completely all over the place at this point)
-- Movement is inconsistent relative to direciton
-- Movement forward and backward is flipped for some reason
+- Fix scale(a cube with a side length of 1.0 is absolutely massive for some reason)
 
 # Acknowledgement
 Some of this code was written while following TheCherno's OpenGL tutorial series. Some of the code is also inspired by a course I'm currently taking(2020/2021).
