@@ -10,7 +10,7 @@ void Camera::SetView(const glm::vec3& eye, const glm::vec3& lookAt, const glm::v
 }
 
 void Camera::SetProjection(float fov, float aspect, float near, float far) {
-	m_Projection = glm::perspective(glm::radians(fov), aspect, near, far);
+	m_Projection = glm::perspective(fov, aspect, near, far);
 }
 
 void Camera::Move(MovementDirection direction, const glm::vec2& mouseMove, float dt) {

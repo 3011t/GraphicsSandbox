@@ -112,10 +112,10 @@ Sandbox::Sandbox() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    m_Camera.SetProjection(glm::radians(70.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
+    m_Camera.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
     m_Camera.SetView(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    //m_Camera.SetMovementSpeed(1.0f);
-    m_Camera.SetSensitivity(0.01f);
+    m_Camera.SetMovementSpeed(1.0f);
+    m_Camera.SetSensitivity(0.1f);
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
 
@@ -218,6 +218,8 @@ void Sandbox::Run() {
 
     IndexBuffer ib_floor(indicesFloor, 6 * 16);
 
+    Mesh floorMesh(vb_floor, ib_floor, va_floor, layoutFloor);
+
     VertexArray va;
     VertexBuffer vb(positionsCube, 8 * 5 * sizeof(float));
 
@@ -227,6 +229,8 @@ void Sandbox::Run() {
     va.AddBuffer(vb, layoutCube);
 
     IndexBuffer ib(indicesCube, 40);
+
+    Mesh cubeMesh(vb, ib, va, layoutCube);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
 
@@ -259,7 +263,7 @@ void Sandbox::Run() {
 
         /* Render here */
         shader.Bind();
-        shader.SetUniformMat4f("u_MVP", m_Camera.CalculateMVP(glm::mat4(0.5f)));
+        shader.SetUniformMat4f("u_MVP", m_Camera.CalculateMVP(glm::mat4(1.0f)));
         shader.SetUniform1i("u_Texture", 0);
         shader.SetUniform4f("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
 
@@ -267,11 +271,11 @@ void Sandbox::Run() {
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        renderer.Draw(va_floor, ib_floor, shader);
+        renderer.Draw(floorMesh, shader);
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 1);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        renderer.Draw(va, ib, shader);
+        renderer.Draw(cubeMesh, shader);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
