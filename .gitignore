@@ -33,5 +33,6 @@
 
 GraphicsSandbox/.vs/*
 GraphicsSandbox/obj/*
+GraphicsSandbox/build/assets/*
 *.ilk
 *.pdb

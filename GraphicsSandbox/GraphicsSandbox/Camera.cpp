@@ -2,6 +2,12 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+// Signum func
+template <typename T>
+int sign(T val) {
+	return (T(0) < val) - (val < T(0));
+}
+
 Camera::Camera() : m_View(1.0f), m_ViewInverse(1.0f), m_MovementSpeed(5.0f), m_Sensitivity(0.1f) {}
 
 void Camera::SetView(const glm::vec3& eye, const glm::vec3& lookAt, const glm::vec3& up) {
@@ -25,6 +31,10 @@ void Camera::Move(MovementDirection direction, const glm::vec2& mouseMove, float
 
 	yaw -= mouseMove.x * m_Sensitivity * dt;
 	pitch -= mouseMove.y * m_Sensitivity * dt;
+
+	if (fabs(pitch) > glm::radians(89.0f)) {
+		pitch = sign(pitch) * glm::radians(89.0f);
+	}
 
 	dir.x = cos(pitch) * cos(yaw);
 	dir.y = sin(pitch);
@@ -59,9 +69,3 @@ void Camera::Move(MovementDirection direction, const glm::vec2& mouseMove, float
 	m_View = glm::inverse(m_ViewInverse);
 }
 
-/*
-glm::mat4 Camera::CalculateMVP(glm::mat4 Model)
-{
-	return m_Projection * m_View * Model;
-}
-*/

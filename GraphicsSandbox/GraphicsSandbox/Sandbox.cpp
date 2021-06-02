@@ -220,8 +220,6 @@ void Sandbox::Run() {
 
     IndexBuffer ib_floor(indicesFloor, 6 * 16);
 
-    Mesh floorMesh(vb_floor, ib_floor, va_floor, layoutFloor);
-
     VertexArray va;
     VertexBuffer vb(positionsCube, 8 * 5 * sizeof(float));
 
@@ -231,8 +229,6 @@ void Sandbox::Run() {
     va.AddBuffer(vb, layoutCube);
 
     IndexBuffer ib(indicesCube, 40);
-
-    Mesh cubeMesh(vb, ib, va, layoutCube);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
 
@@ -277,11 +273,12 @@ void Sandbox::Run() {
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 0);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        renderer.Draw(floorMesh, shader);
+        renderer.Draw(va_floor, ib_floor, shader);
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 1);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        renderer.Draw(cubeMesh, shader);
+        renderer.Draw(va, ib, shader);
+        
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);

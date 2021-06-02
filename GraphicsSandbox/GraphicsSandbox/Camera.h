@@ -31,7 +31,6 @@ public:
 
 	void Move(MovementDirection dir, const glm::vec2& mouseMove, float dt);
 
-	//glm::mat4 CalculateMVP(glm::mat4 Model);
 	const glm::vec4& GetCameraPosition() { return m_ViewInverse[3]; }
 private:
 	glm::mat4 m_View;

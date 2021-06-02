@@ -19,5 +19,5 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 	mesh.Bind();
 	shader.Bind();
 
-	glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, mesh.IndexCount(), GL_UNSIGNED_INT, nullptr);
 }

@@ -7,31 +7,33 @@
 
 // stdlib includes
 #include <string>
-#include <fstream>
+#include <vector>
 
 // Local includes
+#include "Texture.h"
 #include "VertexArray.h"
-#include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "VertexBufferLayout.h"
+
+struct Vertex {
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec2 TexCoords;
+};
 
 class Mesh {
 public:
-	Mesh(VertexBuffer& vb, IndexBuffer& ib, VertexArray& va, VertexBufferLayout& bl);
+	Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<Texture>& textures);
 
 	void Bind() const;
 
-	int32_t GetIndexCount() const { return m_IndexBuffer.GetCount(); }
-
-	const VertexArray& GetVertexArray() const { return m_VertexArray; }
-	const VertexBuffer& GetVertexBuffer() const { return m_VertexBuffer; }
-	const IndexBuffer& GetIndexBuffer() const { return m_IndexBuffer; }
-
-	// static Mesh ReadFromFile(std::string filename);
+	int32_t IndexCount() const { return m_IndexCount; }
 private:
+	std::vector<Texture> m_Textures;
+
+	VertexArray m_VertexArray;
 	VertexBuffer m_VertexBuffer;
 	IndexBuffer m_IndexBuffer;
-	VertexArray m_VertexArray;
-	VertexBufferLayout m_VertBufferLayout;
+
+	uint32_t m_IndexCount;
 };
 

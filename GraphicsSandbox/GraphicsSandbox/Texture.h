@@ -8,6 +8,10 @@
 #include <string>
 #include <cstdint>
 
+enum class TextureType {
+	Material, Diffuse, Specular
+};
+
 class Texture {
 public:
 	Texture(const std::string& path);
