@@ -22,14 +22,12 @@ struct Vertex {
 
 class Mesh {
 public:
-	Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<Texture>& textures);
+	Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices);
 
 	void Bind() const;
 
 	int32_t IndexCount() const { return m_IndexCount; }
 private:
-	std::vector<Texture> m_Textures;
-
 	VertexArray m_VertexArray;
 	VertexBuffer m_VertexBuffer;
 	IndexBuffer m_IndexBuffer;

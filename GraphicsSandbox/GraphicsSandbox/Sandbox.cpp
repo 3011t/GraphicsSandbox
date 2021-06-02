@@ -130,105 +130,49 @@ Sandbox::~Sandbox() {
 }
 
 void Sandbox::Run() {
-
-    float positionsCube[] = {
-         0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
-         0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
-         0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+    std::vector<Vertex> cube_vertices = {
+        // Front face
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        // Top face
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        // Left face
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        // Right face
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        // Bottom face
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        // Back face
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
     };
 
-    uint32_t indicesCube[] = {
-        2, 0, 1,
-        2, 1, 3,
-        4, 5, 6,
-        5, 7, 6,
-        4, 5, 0,
-        5, 1, 0,
-        1, 5, 3,
-        5, 7, 3,
-        6, 7, 2,
-        7, 3, 2,
-        4, 0, 6,
-        0, 2, 6
+    std::vector<uint32_t> cube_indices = {
+         0,  1,  2,   0,  2,  3, // Front face
+         4,  5,  6,   4,  6,  7, // Top face
+         8,  9, 10,   8, 10, 11, // Left face
+        12, 13, 14,  12, 14, 15, // Right face
+        16, 17, 18,  16, 18, 19, // Bottom face
+        20, 21, 22,  20, 22, 23, // Back face
     };
 
-    float positionsFloor[] = {
-        -2.0f,  0.0f,  2.0f,
-        -1.0f,  0.0f,  2.0f,
-         0.0f,  0.0f,  2.0f,
-         1.0f,  0.0f,  2.0f,
-         2.0f,  0.0f,  2.0f,
-
-        -2.0f,  0.0f,  1.0f,
-        -1.0f,  0.0f,  1.0f,
-         0.0f,  0.0f,  1.0f,
-         1.0f,  0.0f,  1.0f,
-         2.0f,  0.0f,  1.0f,
-
-        -2.0f,  0.0f,  0.0f,
-        -1.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,
-         1.0f,  0.0f,  0.0f,
-         2.0f,  0.0f,  0.0f,
-
-        -2.0f,  0.0f, -1.0f,
-        -1.0f,  0.0f, -1.0f,
-         0.0f,  0.0f, -1.0f,
-         1.0f,  0.0f, -1.0f,
-         2.0f,  0.0f, -1.0f,
-
-        -2.0f,  0.0f, -2.0f,
-        -1.0f,  0.0f, -2.0f,
-         0.0f,  0.0f, -2.0f,
-         1.0f,  0.0f, -2.0f,
-         2.0f,  0.0f, -2.0f,
-    };
-
-    uint32_t indicesFloor[] = {
-         0,  6,  1,  0,  5,  6,
-         1,  7,  2,  1,  6,  7,
-         2,  8,  3,  2,  7,  8,
-         3,  9,  4,  3,  8,  9,
-
-         5, 11,  6,  5, 10, 11,
-         6, 12,  7,  6, 11, 12,
-         7, 13,  8,  7, 12, 13,
-         8, 14,  9,  8, 13, 14,
-
-        10, 16, 11, 10, 15, 16,
-        11, 17, 12, 11, 16, 17,
-        12, 18, 13, 12, 17, 18,
-        13, 19, 14, 13, 18, 19,
-
-        15, 21, 16, 15, 20, 21,
-        16, 22, 17, 16, 21, 22,
-        17, 23, 18, 17, 22, 23,
-        18, 24, 19, 18, 23, 24
-    };
-
-    VertexArray va_floor;
-    VertexBuffer vb_floor(positionsFloor, 25 * 3 * sizeof(float));
-
-    VertexBufferLayout layoutFloor;
-    layoutFloor.Push<float>(3);
-    va_floor.AddBuffer(vb_floor, layoutFloor);
-
-    IndexBuffer ib_floor(indicesFloor, 6 * 16);
-
-    VertexArray va;
-    VertexBuffer vb(positionsCube, 8 * 5 * sizeof(float));
-
-    VertexBufferLayout layoutCube;
-    layoutCube.Push<float>(3);
-    layoutCube.Push<float>(2);
-    va.AddBuffer(vb, layoutCube);
-
-    IndexBuffer ib(indicesCube, 40);
+    Mesh cubeMesh(cube_vertices, cube_indices, {});
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
 
@@ -271,13 +215,10 @@ void Sandbox::Run() {
 
         renderer.Clear();
         shader.Bind();
-        shader.SetUniform1i("u_UseTexture", 0);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        renderer.Draw(va_floor, ib_floor, shader);
-        shader.Bind();
         shader.SetUniform1i("u_UseTexture", 1);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        renderer.Draw(va, ib, shader);
+        //renderer.Draw(va, ib, shader);
+        renderer.Draw(cubeMesh, shader);
         
 
         /* Swap front and back buffers */

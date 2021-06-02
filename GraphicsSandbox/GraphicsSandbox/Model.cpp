@@ -1,5 +1,6 @@
 #include "Model.h"
 
+#define TINYGLTF_IMPLEMENTATION
 #include "tiny_gltf.h"
 
 Model::Model()
@@ -25,6 +26,8 @@ Model Model::loadFromFile(const std::string& path)
 	if (!err.empty()) {
 		printf("Err: %s\n", err.c_str());
 	}
+
+	
 
 	return Model();
 }

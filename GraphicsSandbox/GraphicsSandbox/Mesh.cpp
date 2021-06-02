@@ -1,8 +1,7 @@
 #include "Mesh.h"
 
-Mesh::Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<Texture>& textures)
-  : m_Textures(textures),
-	m_VertexBuffer(&verts[0], verts.size() * sizeof(Vertex)),
+Mesh::Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices)
+  : m_VertexBuffer(&verts[0], verts.size() * sizeof(Vertex)),
 	m_VertexArray(),
 	m_IndexBuffer(&indices[0], indices.size() * sizeof(uint32_t)),
 	m_IndexCount(indices.size())
