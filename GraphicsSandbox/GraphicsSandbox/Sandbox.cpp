@@ -110,6 +110,8 @@ Sandbox::Sandbox() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_CULL_FACE);
+
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -132,35 +134,35 @@ Sandbox::~Sandbox() {
 void Sandbox::Run() {
     std::vector<Vertex> cube_vertices = {
         // Front face
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  0.0f}},
         // Top face
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}, { 1.0f,  0.0f}},
         // Left face
-        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
         // Right face
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
         // Bottom face
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}, { 1.0f,  1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}, { 0.0f,  1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, { 0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, { 1.0f,  0.0f}},
         // Back face
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 1.0f,  1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 0.0f,  1.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 0.0f,  0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 1.0f,  0.0f}},
     };
 
     std::vector<uint32_t> cube_indices = {
@@ -172,7 +174,19 @@ void Sandbox::Run() {
         20, 21, 22,  20, 22, 23, // Back face
     };
 
-    Mesh cubeMesh(cube_vertices, cube_indices, {});
+    Mesh cubeMesh(cube_vertices, cube_indices);
+
+    std::vector<Vertex> triangle_vertices = {
+        {{ 5.5f,  5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  1.0f}},
+        {{-5.5f,  5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  1.0f}},
+        {{-5.5f, -5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  0.0f}},
+    };
+
+    std::vector<uint32_t> triangle_indices = {
+        0, 1, 2
+    };
+
+    Mesh triangleMesh(triangle_vertices, triangle_indices);
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
 
@@ -180,7 +194,7 @@ void Sandbox::Run() {
     texture.Bind();
 
     Renderer renderer;
-    renderer.SetClearColour({0.1f, 0.5f, 0.9f, 1.0f});
+    renderer.SetClearColour({0.1f, 0.4f, 0.7f, 1.0f});
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -219,6 +233,7 @@ void Sandbox::Run() {
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         //renderer.Draw(va, ib, shader);
         renderer.Draw(cubeMesh, shader);
+        renderer.Draw(triangleMesh, shader);
         
 
         /* Swap front and back buffers */

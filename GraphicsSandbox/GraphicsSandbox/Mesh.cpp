@@ -18,6 +18,4 @@ Mesh::Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indice
 void Mesh::Bind() const {
 	m_VertexArray.Bind();
 	m_IndexBuffer.Bind();
-
-	// TODO: Tell Shader Uniforms to use specular/diffuse textures
 }

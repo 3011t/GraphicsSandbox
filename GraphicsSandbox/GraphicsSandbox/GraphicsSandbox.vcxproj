@@ -168,6 +168,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -181,6 +182,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Renderer.h" />

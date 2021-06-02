@@ -16,4 +16,6 @@ Some of this code was written while following TheCherno's OpenGL tutorial series
  - GLFW (https://www.glfw.org/)
  - GLAD (https://glad.dav1d.de/)
  - GLM (https://github.com/g-truc/glm)
- - STB, specifically stb_image.h (https://github.com/nothings/stb)
+ - STB, specifically stb_image.h and stb_image_write.h (https://github.com/nothings/stb)
+ - TinyOBJLoader and TinyGLTF (https://github.com/tinyobjloader/tinyobjloader and https://github.com/syoyo/tinygltf)
+ - nlohmann/json, as a dependency for TinyGLTF (https://github.com/nlohmann/json)
