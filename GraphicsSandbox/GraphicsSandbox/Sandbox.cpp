@@ -96,10 +96,12 @@ Sandbox::Sandbox() {
         m_InitStatus = false;
     }
 
-    // Automatically adjust GL viewport !! TODO: get new resolution to change projection so it doesn't look weird
+    // Automatically adjust GL viewport
     glfwSetFramebufferSizeCallback(m_Window, glfwFramebufferCallback);
 
     std::cout << glGetString(GL_VERSION) << std::endl;
+
+    glfwSetKeyCallback(m_Window, glfwKeyCallback);
 
     // Make OpenGL print debug messages
     glEnable(GL_DEBUG_OUTPUT);
@@ -110,12 +112,12 @@ Sandbox::Sandbox() {
 
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LESS);
 
     m_Camera.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
-    m_Camera.SetView(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_Camera.SetView(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_Camera.SetMovementSpeed(1.0f);
-    m_Camera.SetSensitivity(0.1f);
+    m_Camera.SetSensitivity(1.0f);
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
 
@@ -238,6 +240,7 @@ void Sandbox::Run() {
     texture.Bind();
 
     Renderer renderer;
+    renderer.SetClearColour({0.1f, 0.5f, 0.9f, 1.0f});
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -248,7 +251,7 @@ void Sandbox::Run() {
         prevTime = time;
 
         static char title[256];
-        snprintf(title, 256, "dt = %.2fms, FPS = %.1f", dt * 1000.0f, 1.0f / dt);
+        snprintf(title, 256, "dt = %.2fms, FPS = %.1f", dt * 1000.0, 1.0f / dt);
         glfwSetWindowTitle(m_Window, title);
 
         /* Poll for and process events */
@@ -263,18 +266,21 @@ void Sandbox::Run() {
 
         /* Render here */
         shader.Bind();
-        shader.SetUniformMat4f("u_MVP", m_Camera.CalculateMVP(glm::mat4(1.0f)));
+        shader.SetUniformMat4f("u_Projection", m_Camera.GetProjection());
+        shader.SetUniformMat4f("u_View", m_Camera.GetView());
+        shader.SetUniformMat4f("u_Model", glm::mat4(1.0f));
+
         shader.SetUniform1i("u_Texture", 0);
         shader.SetUniform4f("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
 
         renderer.Clear();
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         renderer.Draw(floorMesh, shader);
         shader.Bind();
         shader.SetUniform1i("u_UseTexture", 1);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         renderer.Draw(cubeMesh, shader);
 
         /* Swap front and back buffers */

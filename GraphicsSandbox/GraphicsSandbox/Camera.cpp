@@ -59,7 +59,9 @@ void Camera::Move(MovementDirection direction, const glm::vec2& mouseMove, float
 	m_View = glm::inverse(m_ViewInverse);
 }
 
+/*
 glm::mat4 Camera::CalculateMVP(glm::mat4 Model)
 {
 	return m_Projection * m_View * Model;
 }
+*/
