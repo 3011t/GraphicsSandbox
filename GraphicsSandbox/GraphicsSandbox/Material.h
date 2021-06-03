@@ -15,8 +15,11 @@ public:
 
 	void Bind();
 private:
+	Texture m_Albedo;
 	Texture m_Specular;
 	Texture m_Diffuse;
-	glm::vec4 m_BaseColour;
+	Texture m_Normal;
+	Texture m_Occlusion;
+	Texture m_Metallic;
 };
 

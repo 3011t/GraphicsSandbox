@@ -6,6 +6,7 @@
 
 // Local includes
 #include "Mesh.h"
+#include "Material.h"
 
 class Model {
 public:
@@ -16,8 +17,9 @@ public:
 	// TODO: Make it drawable by the renderer
 private:
 
+
 	std::vector<Mesh> m_Meshes;
+	std::vector<Material> m_Materials;
 
 	std::vector<Texture> loadMaterialTextures(); // TODO: Plug in tinyobjloader
 };
-

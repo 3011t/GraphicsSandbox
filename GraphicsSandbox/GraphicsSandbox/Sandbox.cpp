@@ -71,7 +71,13 @@ void GLMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, G
     printf("Type[0x%x], Severity[0x%x], %s\n", type, severity, message);
 }
 
-Sandbox::Sandbox() {
+Sandbox::Sandbox()
+  : m_Window(nullptr),
+    m_InitStatus(false),
+    m_PrevMouseX(0.0),
+    m_PrevMouseY(0.0),
+    m_DebugMousePosChanged(false)
+{
     glfwSetErrorCallback(glfwErrorCallback);
 
     if (!glfwInit()) {
@@ -234,6 +240,10 @@ void Sandbox::Run() {
         //renderer.Draw(va, ib, shader);
         renderer.Draw(cubeMesh, shader);
         renderer.Draw(triangleMesh, shader);
+        glm::mat4 model_mat = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
+        model_mat = glm::scale(model_mat, glm::vec3(2.0f, 1.0f, 1.0f));
+        shader.SetUniformMat4f("u_Model", model_mat);
+        renderer.Draw(cubeMesh, shader);
         
 
         /* Swap front and back buffers */
