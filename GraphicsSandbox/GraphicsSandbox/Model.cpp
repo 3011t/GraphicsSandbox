@@ -4,12 +4,13 @@
 #include "tiny_obj_loader.h"
 
 #include <iostream>
+#include <vector>
 
 Model::Model()
 {
 }
 
-Model Model::loadFromFile(const std::string& path) {
+Mesh* Model::loadFromFile(const std::string& path) {
     tinyobj::ObjReaderConfig reader_config;
     reader_config.mtl_search_path = "./assets/sponza_scene"; // Path to material files
 
@@ -25,6 +26,9 @@ Model Model::loadFromFile(const std::string& path) {
     if (!reader.Warning().empty()) {
         std::cout << "TinyObjReader: " << reader.Warning();
     }
+
+    std::vector<Vertex> verts;
+    std::vector<uint32_t> indices;
 
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
@@ -46,17 +50,25 @@ Model Model::loadFromFile(const std::string& path) {
                 tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
                 // Check if `normal_index` is zero or positive. negative = no normal data
+                tinyobj::real_t nx = 0.0f;
+                tinyobj::real_t ny = 0.0f;
+                tinyobj::real_t nz = 0.0f;
                 if (idx.normal_index >= 0) {
-                    tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
-                    tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
-                    tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
+                    nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
+                    ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
+                    nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
                 }
 
                 // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+                tinyobj::real_t tx = 0.0f;
+                tinyobj::real_t ty = 0.0f;
                 if (idx.texcoord_index >= 0) {
-                    tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
-                    tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
+                    tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
+                    ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
                 }
+
+                verts.push_back({ {vx,vy,vz}, {nx,ny,nz}, {tx,ty} });
+                indices.push_back(verts.size() - 1);
 
                 // Optional: vertex colors
                 // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
@@ -68,5 +80,10 @@ Model Model::loadFromFile(const std::string& path) {
             // per-face material
             shapes[shapeIndex].mesh.material_ids[f];
         }
+
     }
+
+    Mesh* gen =  new Mesh(verts, indices);
+
+    return gen;
 }

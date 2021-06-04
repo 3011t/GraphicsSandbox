@@ -8,6 +8,7 @@
 
 // Local includes
 #include "Texture.h"
+#include "Shader.h"
 
 class Material {
 public:
@@ -15,6 +16,8 @@ public:
 
 	void Bind();
 private:
+	Shader m_MaterialShader;
+
 	Texture m_Albedo;
 	Texture m_Specular;
 	Texture m_Diffuse;

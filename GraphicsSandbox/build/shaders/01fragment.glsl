@@ -12,5 +12,5 @@ void main()
 {
     vec4 texColour = texture(u_Texture, v_TexCoord);
     colour = (u_UseTexture * texColour) + ((1 - u_UseTexture) * u_Colour);
-    //colour = vec4(vec3(gl_FragCoord.z), 1.0);
+    //colour = vec4(0.5, 0.5, 0.5, 1.0);
 }

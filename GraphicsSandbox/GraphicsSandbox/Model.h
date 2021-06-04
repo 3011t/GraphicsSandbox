@@ -12,7 +12,7 @@ class Model {
 public:
 	Model();
 
-	static Model loadFromFile(const std::string& path);
+	static Mesh* loadFromFile(const std::string& path);
 
 	// TODO: Make it drawable by the renderer
 private:
