@@ -15,6 +15,20 @@ void Camera::SetView(const glm::vec3& eye, const glm::vec3& lookAt, const glm::v
 	m_ViewInverse = glm::inverse(m_View);
 }
 
+void Camera::SetPosition(const glm::vec3& pos) {
+	glm::mat4 view(m_ViewInverse[0], m_ViewInverse[1], m_ViewInverse[2], glm::vec4(0.0f));
+	glm::vec4& dir = view[2];
+
+	glm::vec4& position = view[3];
+	position = glm::vec4(pos, 1.0f);
+
+	m_ViewInverse[0] = glm::vec4(glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(dir))), 0.0f);
+	m_ViewInverse[1] = glm::vec4(glm::normalize(glm::cross(glm::vec3(dir), glm::vec3(m_ViewInverse[0]))), 0.0f);
+	m_ViewInverse[2] = glm::vec4(glm::normalize(glm::vec3(dir)), 0.0f);
+	m_ViewInverse[3] = position;
+	m_View = glm::inverse(m_ViewInverse);
+}
+
 void Camera::SetProjection(float fov, float aspect, float near, float far) {
 	m_Projection = glm::perspective(fov, aspect, near, far);
 }
