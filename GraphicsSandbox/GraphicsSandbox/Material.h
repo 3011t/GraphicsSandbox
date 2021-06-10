@@ -5,6 +5,7 @@
 
 // stdlib includes
 #include <string>
+#include <unordered_map>
 
 // Local includes
 #include "Texture.h"
@@ -12,17 +13,23 @@
 
 class Material {
 public:
-	Material(const std::string& specularTexPath, const std::string& diffuseTexPath);
+	Material(Shader& shader);
+
+	void addTexture(const std::string& texName, TextureType texType);
+	void addShader(const std::string& vertPath, const std::string& fragPath);
 
 	void Bind();
 private:
-	Shader m_MaterialShader;
+	enum class MaterialFlags {
+		TexAlbedo   = 0x0001,
+		TexNormal   = 0x0002,
+		TexSpecular = 0x0004,
+		TexDiffuse  = 0x0008,
+		TexBump     = 0x0010,
+	};
 
-	Texture m_Albedo;
-	Texture m_Specular;
-	Texture m_Diffuse;
-	Texture m_Normal;
-	Texture m_Occlusion;
-	Texture m_Metallic;
+	Shader m_MaterialShader;
+	std::unordered_map<std::string, Texture> m_Textures;
+	MaterialFlags m_Flags;
 };
 

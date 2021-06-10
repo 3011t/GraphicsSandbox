@@ -21,3 +21,14 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 
 	glDrawElements(GL_TRIANGLES, mesh.IndexCount(), GL_UNSIGNED_INT, nullptr);
 }
+
+void Renderer::Draw(const Model& model) {
+	auto meshes = model.getMeshes();
+	auto materials = model.getMaterials();
+
+	materials[0]->Bind();
+	for (auto mesh : meshes) {
+		mesh->Bind();
+		glDrawElements(GL_TRIANGLES, mesh->IndexCount(), GL_UNSIGNED_INT, nullptr);
+	}
+}

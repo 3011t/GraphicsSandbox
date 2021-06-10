@@ -283,9 +283,10 @@ void Sandbox::Run() {
     */
 #pragma endregion
 
-    Mesh* objTest = Model::loadFromFile("./assets/sponza_scene/crytek-sponza-huge-vray.obj");
+    Model objTest = Model::loadFromFile("./assets/sponza_scene/crytek-sponza-huge-vray.obj");
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
+    objTest.addMaterial(new Material(shader));
 
     Texture texture("textures/BrickWall.jpg");
     texture.Bind();
@@ -338,15 +339,13 @@ void Sandbox::Run() {
         // Hopefully sponza
         model_mat = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
         shader.SetUniformMat4f("u_Model", model_mat);
-        renderer.Draw(*objTest, shader);
+        renderer.Draw(objTest);
 
         
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
     }
-
-    delete(objTest);
 }
 
 void Sandbox::ProcessInput(float dt) {

@@ -9,7 +9,11 @@
 #include <cstdint>
 
 enum class TextureType {
-	Material, Diffuse, Specular
+	Diffuse,
+	Specular,
+	Normal,
+	Occlusion,
+	Bump,
 };
 
 class Texture {

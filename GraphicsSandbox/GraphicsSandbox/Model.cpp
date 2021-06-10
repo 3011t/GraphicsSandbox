@@ -6,13 +6,23 @@
 #include <iostream>
 #include <vector>
 
-Model::Model()
-{
+Model::Model(const std::vector<Mesh*>& meshes, const std::vector<Material*>& materials, const std::vector<uint64_t>& meshMaterialIndices)
+    : m_Meshes(meshes), m_Materials(materials), m_meshMaterialIndices(meshMaterialIndices)
+{}
+
+Model::~Model() {
+    for (auto material : m_Materials) delete(material);
+    for (auto mesh : m_Meshes) delete(mesh);
 }
 
-Mesh* Model::loadFromFile(const std::string& path) {
+void Model::addMaterial(Material* material) {
+    m_Materials.push_back(material);
+}
+
+Model Model::loadFromFile(const std::string& path) {
     tinyobj::ObjReaderConfig reader_config;
     reader_config.mtl_search_path = "./assets/sponza_scene"; // Path to material files
+    reader_config.triangulate = true;
 
     tinyobj::ObjReader reader;
 
@@ -27,16 +37,20 @@ Mesh* Model::loadFromFile(const std::string& path) {
         std::cout << "TinyObjReader: " << reader.Warning();
     }
 
-    std::vector<Vertex> verts;
-    std::vector<uint32_t> indices;
-
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
     auto& materials = reader.GetMaterials();
 
+    std::vector<Mesh*> o_meshes;
+    std::vector<Material*> o_materials;
+    std::vector<uint64_t> o_meshMaterialIndices;
+
     // Loop over shapes
     for (size_t shapeIndex = 0; shapeIndex < shapes.size(); shapeIndex++) {
-        // Loop over faces(polygon)
+        // Create buffers for Vertices and Indices for each Mesh
+        std::vector<Vertex> verts;
+        std::vector<uint32_t> indices;
+
         size_t index_offset = 0;
         for (size_t f = 0; f < shapes[shapeIndex].mesh.num_face_vertices.size(); f++) {
             size_t fv = size_t(shapes[shapeIndex].mesh.num_face_vertices[f]);
@@ -78,12 +92,16 @@ Mesh* Model::loadFromFile(const std::string& path) {
             index_offset += fv;
 
             // per-face material
-            shapes[shapeIndex].mesh.material_ids[f];
+            if (o_meshMaterialIndices.size() < shapeIndex) o_meshMaterialIndices.push_back(shapes[shapeIndex].mesh.material_ids[f]);
         }
+
+        o_meshes.push_back(new Mesh(verts, indices));
+    }
+
+    for (size_t materialIndex = 0; materialIndex < materials.size(); ++materialIndex) {
+        auto material = materials[materialIndex];
 
     }
 
-    Mesh* gen =  new Mesh(verts, indices);
-
-    return gen;
+    return Model(o_meshes, o_materials, o_meshMaterialIndices);
 }
