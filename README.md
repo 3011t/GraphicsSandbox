@@ -1,4 +1,7 @@
 # GraphicsSandbox
+This README is very much Work in Progress, same goes for all of my code
+that this repository currently contains.
+
 A repository that I use for playing around with real-time computer graphics.
 
 The project currently targets OpenGL v4.6, though the version can be lowered in Sandbox constructor to v4.3 with no other changes. 
