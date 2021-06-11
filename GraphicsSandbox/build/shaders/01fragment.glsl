@@ -19,6 +19,8 @@ uniform float u_Shininess;
 float near = 0.1f;
 float far = 10.0f;
 
+float bumpScale = 0.05f;
+
 float LinearizeDepth(float depth) 
 {
     float z = depth * 2.0 - 1.0; // back to NDC 

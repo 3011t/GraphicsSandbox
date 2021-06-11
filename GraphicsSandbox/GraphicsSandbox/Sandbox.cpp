@@ -319,10 +319,10 @@ void Sandbox::Run() {
         }
 
         if (lightSourcePos.y > 50.0f && rising) rising = false;
-        else if (lightSourcePos.y < 10.0f && !rising) rising = true;
+        else if (lightSourcePos.y < 0.0f && !rising) rising = true;
 
-        if (rising) lightSourcePos.y += 0.01f;
-        else lightSourcePos.y -= 0.01f;
+        if (rising) lightSourcePos.y += 1.0f;
+        else lightSourcePos.y -= 1.0f;
 
 
         /* Render here */

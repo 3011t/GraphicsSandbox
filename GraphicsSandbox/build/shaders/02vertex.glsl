@@ -15,7 +15,7 @@ uniform mat4 u_Model;
 void main()
 {
     gl_Position = u_Projection * u_View * u_Model * position;
-    v_Pos = position;
+    v_Pos = u_Model * position;
     v_Normal = normal;
     v_TexCoord = texCoord;
 }
