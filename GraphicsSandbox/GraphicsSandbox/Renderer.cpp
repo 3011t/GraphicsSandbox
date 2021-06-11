@@ -25,10 +25,11 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 void Renderer::Draw(const Model& model) {
 	auto meshes = model.getMeshes();
 	auto materials = model.getMaterials();
+	auto materialIndices = model.getMaterialIndices();
 
-	materials[0]->Bind();
-	for (auto mesh : meshes) {
-		mesh->Bind();
-		glDrawElements(GL_TRIANGLES, mesh->IndexCount(), GL_UNSIGNED_INT, nullptr);
+	for (size_t i = 0; i < meshes.size(); ++i) {
+		meshes[i]->Bind();
+		materials[materialIndices[i]]->Bind();
+		glDrawElements(GL_TRIANGLES, meshes[i]->IndexCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }

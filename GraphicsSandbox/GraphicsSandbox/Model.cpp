@@ -19,6 +19,10 @@ void Model::addMaterial(Material* material) {
     m_Materials.push_back(material);
 }
 
+void Model::setCommonShader(Shader* shader) {
+    for (auto material : m_Materials) material->setShader(shader);
+}
+
 Model Model::loadFromFile(const std::string& path) {
     tinyobj::ObjReaderConfig reader_config;
     reader_config.mtl_search_path = "./assets/sponza_scene"; // Path to material files
@@ -92,15 +96,23 @@ Model Model::loadFromFile(const std::string& path) {
             index_offset += fv;
 
             // per-face material
-            if (o_meshMaterialIndices.size() < shapeIndex) o_meshMaterialIndices.push_back(shapes[shapeIndex].mesh.material_ids[f]);
+            if (o_meshMaterialIndices.size() <= shapeIndex) o_meshMaterialIndices.push_back(shapes[shapeIndex].mesh.material_ids[f]);
         }
 
         o_meshes.push_back(new Mesh(verts, indices));
     }
 
     for (size_t materialIndex = 0; materialIndex < materials.size(); ++materialIndex) {
-        auto material = materials[materialIndex];
+        auto matDesc = materials[materialIndex]; // Material descriptor
+        Material* material = new Material();
 
+        if (matDesc.diffuse_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.diffuse_texname, TextureType::Diffuse);
+        if (matDesc.specular_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.specular_texname, TextureType::Specular);
+        if (matDesc.normal_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.normal_texname, TextureType::Normal);
+        if (matDesc.bump_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.bump_texname, TextureType::Bump);
+        //if (matDesc.occlusion_texname != "") material->addTexture(matDesc.diffuse_texname, TextureType::Diffuse);
+
+        o_materials.push_back(material);
     }
 
     return Model(o_meshes, o_materials, o_meshMaterialIndices);

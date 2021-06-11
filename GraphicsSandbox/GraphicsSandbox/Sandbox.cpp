@@ -286,13 +286,16 @@ void Sandbox::Run() {
     Model objTest = Model::loadFromFile("./assets/sponza_scene/crytek-sponza-huge-vray.obj");
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
-    objTest.addMaterial(new Material(shader));
+    objTest.setCommonShader(&shader);
 
     Texture texture("textures/BrickWall.jpg");
-    texture.Bind();
+    texture.Bind(0);
 
     Renderer renderer;
     renderer.SetClearColour({ 0.1f, 0.4f, 0.7f, 1.0f });
+
+    glm::vec3 lightSourcePos = {0.0f, 10.f, 0.0f};
+    bool rising = true;
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -310,10 +313,17 @@ void Sandbox::Run() {
         ProcessInput(dt);
 
         if (m_DebugMousePosChanged) {
-            const glm::vec4& cameraPos = m_Camera.GetCameraPosition();
+            const glm::vec4& cameraPos = m_Camera.GetPosition();
             printf("Current position: X: %f; Y: %f; Z: %f\n", cameraPos.x, cameraPos.y, cameraPos.z);
             m_DebugMousePosChanged = false;
         }
+
+        if (lightSourcePos.y > 50.0f && rising) rising = false;
+        else if (lightSourcePos.y < 10.0f && !rising) rising = true;
+
+        if (rising) lightSourcePos.y += 0.01f;
+        else lightSourcePos.y -= 0.01f;
+
 
         /* Render here */
         shader.Bind();
@@ -321,14 +331,16 @@ void Sandbox::Run() {
         shader.SetUniformMat4f("u_View", m_Camera.GetView());
         shader.SetUniformMat4f("u_Model", glm::mat4(1.0f));
 
-        shader.SetUniform1i("u_Texture", 0);
-        shader.SetUniform4f("u_Colour", 1.0f, 0.0f, 0.0f, 1.0f);
+        auto viewPos = m_Camera.GetPosition();
+        shader.SetUniform4f("u_ViewPos", viewPos.x, viewPos.y, viewPos.z, 0);
+        shader.SetUniform4f("u_LightPos", lightSourcePos.x, lightSourcePos.y, lightSourcePos.z, 0.0f);
+        shader.SetUniform1f("u_AmbientLight", 0.05f);
 
         renderer.Clear();
         shader.Bind();
-        shader.SetUniform1i("u_UseTexture", 1);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         //renderer.Draw(va, ib, shader);
+        texture.Bind(0);
         renderer.Draw(cubeMesh, shader);
         renderer.Draw(triangleMesh, shader);
         // Second cube
@@ -340,8 +352,6 @@ void Sandbox::Run() {
         model_mat = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
         shader.SetUniformMat4f("u_Model", model_mat);
         renderer.Draw(objTest);
-
-        
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
