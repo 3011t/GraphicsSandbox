@@ -5,9 +5,9 @@ The project currently targets OpenGL v4.6, though the version can be lowered in 
 The version should be able to go as low as v3.3 is you disable OpenGL debug prints.
 
 # Known issues & TODOs
-- Add Mesh and Model classes
-- Clean up Sandbox.cpp(it's completely all over the place at this point)
-- Fix scale(a cube with a side length of 1.0 is absolutely massive for some reason)
+There are very many current issues with how I load, represent and render the scene,
+I'm currently only trying to create a working prototype that I will probably completely
+refactor later.
 
 # Acknowledgement
 Some of this code was written while following TheCherno's OpenGL tutorial series. Some of the code is also inspired by a course I'm currently taking(2020/2021).
