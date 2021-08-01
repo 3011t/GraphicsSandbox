@@ -4,11 +4,8 @@
 #include <glad/glad.h>
 
 // Local includes
-#include "IndexBuffer.h"
-#include "VertexArray.h"
 #include "Shader.h"
-#include "Mesh.h"
-#include "RenderObject.h"
+#include "Model.h"
 
 class Renderer {
 public:

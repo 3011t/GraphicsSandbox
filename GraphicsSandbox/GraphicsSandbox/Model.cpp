@@ -106,11 +106,7 @@ Model Model::loadFromFile(const std::string& path) {
         auto matDesc = materials[materialIndex]; // Material descriptor
         Material* material = new Material();
 
-        if (matDesc.diffuse_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.diffuse_texname, TextureType::Diffuse);
-        if (matDesc.specular_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.specular_texname, TextureType::Specular);
-        if (matDesc.normal_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.normal_texname, TextureType::Normal);
-        if (matDesc.bump_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.bump_texname, TextureType::Bump);
-        //if (matDesc.occlusion_texname != "") material->addTexture(matDesc.diffuse_texname, TextureType::Diffuse);
+        if (matDesc.diffuse_texname != "") material->addTexture("./assets/sponza_scene/" + matDesc.diffuse_texname);
 
         o_materials.push_back(material);
     }

@@ -189,100 +189,6 @@ void Sandbox::Run() {
 
     Mesh cubeMesh(cube_vertices, cube_indices);
 
-    std::vector<Vertex> triangle_vertices = {
-        {{ 5.5f,  5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  1.0f}},
-        {{-5.5f,  5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  1.0f}},
-        {{-5.5f, -5.5f,  5.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  0.0f}},
-    };
-
-    std::vector<uint32_t> triangle_indices = {
-        0, 1, 2
-    };
-
-    Mesh triangleMesh(triangle_vertices, triangle_indices);
-
-#pragma region temporaryFloor
-    /*
-    float positionsFloor[] = {
-        -2.0f,  0.0f,  2.0f,
-        -1.0f,  0.0f,  2.0f,
-         0.0f,  0.0f,  2.0f,
-         1.0f,  0.0f,  2.0f,
-         2.0f,  0.0f,  2.0f,
-
-        -2.0f,  0.0f,  1.0f,
-        -1.0f,  0.0f,  1.0f,
-         0.0f,  0.0f,  1.0f,
-         1.0f,  0.0f,  1.0f,
-         2.0f,  0.0f,  1.0f,
-
-        -2.0f,  0.0f,  0.0f,
-        -1.0f,  0.0f,  0.0f,
-         0.0f,  0.0f,  0.0f,
-         1.0f,  0.0f,  0.0f,
-         2.0f,  0.0f,  0.0f,
-
-        -2.0f,  0.0f, -1.0f,
-        -1.0f,  0.0f, -1.0f,
-         0.0f,  0.0f, -1.0f,
-         1.0f,  0.0f, -1.0f,
-         2.0f,  0.0f, -1.0f,
-
-        -2.0f,  0.0f, -2.0f,
-        -1.0f,  0.0f, -2.0f,
-         0.0f,  0.0f, -2.0f,
-         1.0f,  0.0f, -2.0f,
-         2.0f,  0.0f, -2.0f,
-    };
-
-    uint32_t indicesFloor[] = {
-         0,  6,  1,  0,  5,  6,
-         1,  7,  2,  1,  6,  7,
-         2,  8,  3,  2,  7,  8,
-         3,  9,  4,  3,  8,  9,
-
-         5, 11,  6,  5, 10, 11,
-         6, 12,  7,  6, 11, 12,
-         7, 13,  8,  7, 12, 13,
-         8, 14,  9,  8, 13, 14,
-
-        10, 16, 11, 10, 15, 16,
-        11, 17, 12, 11, 16, 17,
-        12, 18, 13, 12, 17, 18,
-        13, 19, 14, 13, 18, 19,
-
-        15, 21, 16, 15, 20, 21,
-        16, 22, 17, 16, 21, 22,
-        17, 23, 18, 17, 22, 23,
-        18, 24, 19, 18, 23, 24
-    };
-
-    VertexBufferLayout layoutFloor;
-    layoutFloor.Push<float>(3);
-
-    // Test floor
-    if (tickCount % delay == 0) {
-        for (int i = 0; i < 25; ++i) {
-            positionsFloor[(3 * i) + 1] += (rand() % 2 == 0) ? 0.1f : -0.1f;
-        }
-
-        VertexArray va_floor;
-        VertexBuffer vb_floor(positionsFloor, 25 * 3 * sizeof(float));
-        va_floor.AddBuffer(vb_floor, layoutFloor);
-        IndexBuffer ib_floor(indicesFloor, 6 * 16);
-        renderer.Draw(va_floor, ib_floor, shader);
-    }
-    else {
-        VertexArray va_floor;
-        VertexBuffer vb_floor(positionsFloor, 25 * 3 * sizeof(float));
-        va_floor.AddBuffer(vb_floor, layoutFloor);
-        IndexBuffer ib_floor(indicesFloor, 6 * 16);
-        renderer.Draw(va_floor, ib_floor, shader);
-    }
-    ++tickCount;
-    */
-#pragma endregion
-
     Model objTest = Model::loadFromFile("./assets/sponza_scene/crytek-sponza-huge-vray.obj");
 
     Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
@@ -294,7 +200,7 @@ void Sandbox::Run() {
     Renderer renderer;
     renderer.SetClearColour({ 0.1f, 0.4f, 0.7f, 1.0f });
 
-    glm::vec3 lightSourcePos = {0.0f, 10.f, 0.0f};
+    glm::vec3 lightSourcePos = {0.0f, 6.f, 0.0f};
     bool rising = true;
 
     double prevTime = 0.0;
@@ -318,13 +224,6 @@ void Sandbox::Run() {
             m_DebugMousePosChanged = false;
         }
 
-        if (lightSourcePos.y > 50.0f && rising) rising = false;
-        else if (lightSourcePos.y < 0.0f && !rising) rising = true;
-
-        if (rising) lightSourcePos.y += 1.0f;
-        else lightSourcePos.y -= 1.0f;
-
-
         /* Render here */
         shader.Bind();
         shader.SetUniformMat4f("u_Projection", m_Camera.GetProjection());
@@ -342,7 +241,6 @@ void Sandbox::Run() {
         //renderer.Draw(va, ib, shader);
         texture.Bind(0);
         renderer.Draw(cubeMesh, shader);
-        renderer.Draw(triangleMesh, shader);
         // Second cube
         glm::mat4 model_mat = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
         model_mat = glm::scale(model_mat, glm::vec3(2.0f, 1.0f, 1.0f));

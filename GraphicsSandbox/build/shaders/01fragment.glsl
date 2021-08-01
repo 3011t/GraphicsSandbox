@@ -9,10 +9,6 @@ in vec2 v_TexCoord;
 uniform vec4 u_LightPos;
 uniform vec4 u_ViewPos;
 uniform sampler2D u_Diffuse;
-uniform sampler2D u_Specular;
-uniform sampler2D u_Normal;
-uniform sampler2D u_Bump;
-uniform sampler2D u_Occlusion;
 uniform float u_AmbientLight;
 uniform float u_Shininess;
 
@@ -39,9 +35,8 @@ void main()
     vec3 lightColour = vec3(1.0f, 1.0f, 1.0f);
 
     vec3 albedo = texture(u_Diffuse, v_TexCoord).rgb;
-    vec3 noSample = texture(u_Normal, v_TexCoord.st).rgb;
-    float specSample = texture(u_Specular, v_TexCoord.st).r;
-    float occlusion = texture(u_Occlusion, v_TexCoord.st).r;
+    float specSample = 0.1f;
+    float occlusion = 0.0f;
 
     vec3 lightDir = normalize(u_LightPos - v_Pos).xyz;
     float lengthSq = dot(lightDir, lightDir);
@@ -57,9 +52,9 @@ void main()
     horizon *= horizon;
     horizon *= horizon;
 
-    vec3 ambient = vec3(0.1f, 0.1f, 0.1f) * occlusion;
+    vec3 ambient = vec3(0.3f, 0.3f, 0.3f) * occlusion;
     vec3 diffuse = horizon * max(0.0f, dot(v_Normal, lightDir)) * lightColour / lengthSq;
     vec3 specular = horizon * specSample * lightColour * pow(max(0.0f, dot(v_Normal, halfDir)), 64.0f) / lengthSq;
 
-    colour = vec4(albedo * (ambient + diffuse) + specular, 1.0);
+    colour = vec4(albedo * (ambient + diffuse) + specular, texture(u_Diffuse, v_TexCoord).a);
 }

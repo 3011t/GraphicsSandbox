@@ -8,6 +8,8 @@
 #include "Mesh.h"
 #include "Material.h"
 
+// TODO: This should probably be just a struct, it definitely shouldn't contain the loadFromFile method
+
 class Model {
 public:
 	Model(const std::vector<Mesh*>& meshes, const std::vector<Material*>& materials, const std::vector<uint64_t>& meshMaterialIndices);

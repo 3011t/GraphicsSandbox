@@ -11,8 +11,10 @@
 
 // Local includes
 #include "Texture.h"
-#include "VertexArray.h"
-#include "IndexBuffer.h"
+#include "GLWrappers/VertexArray.h"
+#include "GLWrappers/IndexBuffer.h"
+
+// TODO: Rework this so that it holds vertex information in a better format.
 
 struct Vertex {
 	glm::vec3 Position;

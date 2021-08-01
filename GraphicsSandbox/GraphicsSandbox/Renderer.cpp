@@ -29,7 +29,8 @@ void Renderer::Draw(const Model& model) {
 
 	for (size_t i = 0; i < meshes.size(); ++i) {
 		meshes[i]->Bind();
-		materials[materialIndices[i]]->Bind();
+		if (i < materialIndices.size() && materials.size() > 0) materials[materialIndices[i]]->Bind();
 		glDrawElements(GL_TRIANGLES, meshes[i]->IndexCount(), GL_UNSIGNED_INT, nullptr);
+		if (i < materialIndices.size() && materials.size() > 0) materials[materialIndices[i]]->Unbind();
 	}
 }

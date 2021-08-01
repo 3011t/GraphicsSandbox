@@ -166,34 +166,34 @@
   <ItemGroup>
     <ClCompile Include="..\third-party\Glad\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="GLWrappers\IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Sandbox.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexArray.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="GLWrappers\VertexArray.cpp" />
+    <ClCompile Include="GLWrappers\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="GLWrappers\IndexBuffer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="RenderObject.h" />
     <ClInclude Include="Sandbox.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexArray.h" />
-    <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="VertexBufferLayout.h" />
+    <ClInclude Include="GLWrappers\VertexArray.h" />
+    <ClInclude Include="GLWrappers\VertexBuffer.h" />
+    <ClInclude Include="GLWrappers\VertexBufferLayout.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
