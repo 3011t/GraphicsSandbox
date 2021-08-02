@@ -17,7 +17,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "Camera.h"
-#include "Model.h"
+#include "Mesh.h"
 
 class Sandbox {
 public:

@@ -21,16 +21,3 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 
 	glDrawElements(GL_TRIANGLES, mesh.IndexCount(), GL_UNSIGNED_INT, nullptr);
 }
-
-void Renderer::Draw(const Model& model) {
-	auto meshes = model.getMeshes();
-	auto materials = model.getMaterials();
-	auto materialIndices = model.getMaterialIndices();
-
-	for (size_t i = 0; i < meshes.size(); ++i) {
-		meshes[i]->Bind();
-		if (i < materialIndices.size() && materials.size() > 0) materials[materialIndices[i]]->Bind();
-		glDrawElements(GL_TRIANGLES, meshes[i]->IndexCount(), GL_UNSIGNED_INT, nullptr);
-		if (i < materialIndices.size() && materials.size() > 0) materials[materialIndices[i]]->Unbind();
-	}
-}
