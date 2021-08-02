@@ -168,10 +168,9 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GLWrappers\IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ModelInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Sandbox.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -181,10 +180,9 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GLWrappers\IndexBuffer.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="ModelInstance.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Sandbox.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="GLWrappers\VertexArray.h" />

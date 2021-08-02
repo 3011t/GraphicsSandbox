@@ -5,7 +5,7 @@
 
 // Local includes
 #include "Shader.h"
-#include "Mesh.h"
+#include "Scene.h"
 
 class Renderer {
 public:
@@ -15,8 +15,7 @@ public:
 
 	// Draw functions
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void Draw(const Mesh& mesh, const Shader& shader) const;
-	//void Draw(const RenderObject& object) const;
+	void Draw(const Scene& scene) const;
 
 	void SetClearColour(glm::vec4 rgba) { m_ClearColour = rgba; }
 private:

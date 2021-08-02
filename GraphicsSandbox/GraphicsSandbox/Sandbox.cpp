@@ -3,7 +3,6 @@
 #include <cstdlib>
 
 // My naming convention with these function is terrible
-// TODO: Fix
 void glfwErrorCallback(int error, const char* description)
 {
     printf("GLFW Error %i: %s\n", error, description);
@@ -187,9 +186,18 @@ void Sandbox::Run() {
         20, 21, 22,  20, 22, 23, // Back face
     };
 
-    Mesh cubeMesh(cube_vertices, cube_indices);
+    VertexArray va = VertexArray();
+    VertexBuffer vb = VertexBuffer(&cube_vertices[0], cube_vertices.size() * sizeof(Vertex));
+    IndexBuffer ib = IndexBuffer(&cube_indices[0], cube_indices.size());
 
-    Shader shader("shaders/02vertex.glsl", "shaders/01fragment.glsl");
+    VertexBufferLayout layout;
+    layout.Push<float>(3); // Position
+    layout.Push<float>(3); // Normal
+    layout.Push<float>(2); // Tex Coords
+
+    va.AddBuffer(vb, layout);
+
+    Shader shader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
 
     Texture texture("textures/BrickWall.jpg");
     texture.Bind(0);
@@ -198,7 +206,6 @@ void Sandbox::Run() {
     renderer.SetClearColour({ 0.1f, 0.4f, 0.7f, 1.0f });
 
     glm::vec3 lightSourcePos = {0.0f, 6.f, 0.0f};
-    bool rising = true;
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -235,12 +242,12 @@ void Sandbox::Run() {
         renderer.Clear();
         shader.Bind();
         texture.Bind(0);
-        renderer.Draw(cubeMesh, shader);
+        renderer.Draw(va, ib, shader);
         // Second cube
         glm::mat4 model_mat = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
         model_mat = glm::scale(model_mat, glm::vec3(2.0f, 1.0f, 1.0f));
         shader.SetUniformMat4f("u_Model", model_mat);
-        renderer.Draw(cubeMesh, shader);
+        renderer.Draw(va, ib, shader);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);

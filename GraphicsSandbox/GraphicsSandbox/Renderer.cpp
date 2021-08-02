@@ -15,9 +15,6 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
-	mesh.Bind();
-	shader.Bind();
+void Renderer::Draw(const Scene& scene) const {
 
-	glDrawElements(GL_TRIANGLES, mesh.IndexCount(), GL_UNSIGNED_INT, nullptr);
 }
