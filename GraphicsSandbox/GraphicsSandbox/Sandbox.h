@@ -27,7 +27,7 @@ public:
 	void Run();
 	bool GetStatus() { return m_InitStatus; }
 private:
-	void ProcessInput(float dt);
+	InputEvents ProcessInput(float dt);
 
 	GLFWwindow* m_Window;
 	bool m_InitStatus;

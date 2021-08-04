@@ -8,8 +8,12 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "InputEvents.h"
 
 class Renderer;
+
+// I am aware that the global pointers are ugly and I'm probably asking for trouble by using them,
+// but I'm not sure how I'd go about copying the objects by value without f****** up the global GL state.
 
 // TODO:
 // Separate static and dynamic geometry
@@ -20,56 +24,91 @@ struct Vertex {
 	glm::vec2 TexCoords;
 };
 
-struct Mesh {
-	std::vector<Vertex> Vertices;
-	std::vector<uint32_t> Indices;
+class Mesh {
+public:
+	Mesh (const std::string& name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+	  : m_Name(name),
+		m_VertexArray(),
+		m_VertexBuffer(&vertices[0], vertices.size() * sizeof(Vertex)),
+		m_IndexBuffer(&indices[0], indices.size())
+	{
+		m_BufferLayout.Push<float>(3);
+		m_BufferLayout.Push<float>(3);
+		m_BufferLayout.Push<float>(2);
+
+		m_VertexArray.AddBuffer(m_VertexBuffer, m_BufferLayout);
+	}
+
+	void Bind() const {
+		m_VertexArray.Bind();
+		m_IndexBuffer.Bind();
+	}
+
+	uint32_t GetIndexCount() const {
+		return m_IndexBuffer.GetCount();
+	}
+
+private:
+	std::string m_Name;
+
+	VertexArray m_VertexArray;
+	VertexBuffer m_VertexBuffer;
+	VertexBufferLayout m_BufferLayout;
+	IndexBuffer m_IndexBuffer;
+
+	friend Renderer;
 };
 
 struct Material {
-	Texture Diffuse;
+	std::string Name;
+
+	glm::vec3 Ambient;
+	glm::vec3 Diffuse;
+	glm::vec3 Specular;
+	float Shininess;
+	Texture DiffuseMap;
 };
 
 struct Model {
+	~Model() {
+		for (auto mesh : Meshes) delete(mesh);
+		for (auto material : Materials) delete(material);
+	}
+
 	std::string Name;
-	Mesh Mesh;
-	Material Material;
+	std::vector<Mesh*> Meshes;
+	std::vector<uint32_t> MeshMaterial;
+	std::vector<Material*> Materials;
 };
 
-struct ModelInstance {
+struct Instance {
 	std::string ModelName;
 	glm::mat4 Transform;
 };
 
 class Scene {
 public:
+	~Scene();
 
-	void Update();
+	void Update(const InputEvents& events);
 
-	void AddModel(Model model);
+	void AddModelFromFile(const std::string& filename, const std::string& modelName);
+	void AddInstance(const Instance& instance);
 
-	// Static models
-	void AddStaticModelInstance(ModelInstance instance);
-	void FinalizeStaticGeometry();
-
-	void AddCamera(Camera camera);
-	void AddShader(Shader shader);
+	void AddCamera(const Camera& camera);
+	void AddShader(const std::string& vertShaderFilename, const std::string& fragShaderFilename);
 	void AddLight(const glm::vec3& position);
 private:
 	uint64_t m_currentShader;
 
 	std::vector<glm::vec3> m_Lights;
 	Camera m_Camera;
-	std::vector<Shader> m_Shaders;
+	std::vector<Shader*> m_Shaders;
 
 	std::unordered_map<std::string, uint64_t> m_ModelIndices;
-	std::vector<Model> m_Models;
-	std::vector<ModelInstance> m_StaticModelInstances;
+	std::vector<Model*> m_Models;
+	std::vector<Instance> m_ModelInstances;
 
-	std::unordered_map<std::string, uint64_t> m_StaticGeometryIndices;
-	std::vector<Material> m_StaticMaterials;
-	std::vector<VertexArray> m_VertexArrays;
-	std::vector<IndexBuffer> m_IndexBuffers;
-
-	friend Renderer;
+	friend Renderer; // Yes, I'm letting Renderer touch the private parts of the Scene objects, it makes things easier. ;-)
 };
 

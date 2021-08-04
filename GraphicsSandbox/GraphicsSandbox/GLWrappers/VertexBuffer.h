@@ -6,8 +6,6 @@
 // stdlib includes
 #include <cstdint>
 
-
-
 class VertexBuffer {
 public:
 	VertexBuffer(const void* data, uint32_t size);

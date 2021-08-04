@@ -19,6 +19,7 @@ enum class MovementDirection : uint32_t {
 class Camera {
 public:
 	Camera();
+	Camera(const Camera& other);
 
 	void SetMovementSpeed(float speed) { m_MovementSpeed = speed; }
 	void SetSensitivity(float sensitivity) { m_Sensitivity = sensitivity; }

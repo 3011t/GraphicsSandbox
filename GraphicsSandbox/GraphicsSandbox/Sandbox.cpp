@@ -130,7 +130,7 @@ Sandbox::Sandbox()
 
     m_Camera.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
     m_Camera.SetView(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    m_Camera.SetMovementSpeed(1.0f);
+    m_Camera.SetMovementSpeed(3.0f);
     m_Camera.SetSensitivity(1.0f);
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
@@ -197,6 +197,8 @@ void Sandbox::Run() {
 
     va.AddBuffer(vb, layout);
 
+    Mesh cube_mesh("cube", cube_vertices, cube_indices);
+
     Shader shader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
 
     Texture texture("textures/BrickWall.jpg");
@@ -206,6 +208,13 @@ void Sandbox::Run() {
     renderer.SetClearColour({ 0.1f, 0.4f, 0.7f, 1.0f });
 
     glm::vec3 lightSourcePos = {0.0f, 6.f, 0.0f};
+
+    Scene scene;
+    scene.AddCamera(m_Camera);
+    scene.AddShader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
+    scene.AddModelFromFile("assets/sponza_scene/crytek-sponza.obj", "Sponza");
+    glm::mat4 sponza_transform = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05f)), glm::vec3(30.0f, 30.f, 30.0f));
+    scene.AddInstance({ "Sponza", sponza_transform });
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -220,7 +229,7 @@ void Sandbox::Run() {
 
         /* Poll for and process events */
         glfwPollEvents();
-        ProcessInput(dt);
+        InputEvents events = ProcessInput(dt);
 
         if (m_DebugMousePosChanged) {
             const glm::vec4& cameraPos = m_Camera.GetPosition();
@@ -228,33 +237,37 @@ void Sandbox::Run() {
             m_DebugMousePosChanged = false;
         }
 
+        scene.Update(events);
+
         /* Render here */
         shader.Bind();
         shader.SetUniformMat4f("u_Projection", m_Camera.GetProjection());
         shader.SetUniformMat4f("u_View", m_Camera.GetView());
         shader.SetUniformMat4f("u_Model", glm::mat4(1.0f));
 
-        auto viewPos = m_Camera.GetPosition();
-        shader.SetUniform4f("u_ViewPos", viewPos.x, viewPos.y, viewPos.z, 0);
-        shader.SetUniform4f("u_LightPos", lightSourcePos.x, lightSourcePos.y, lightSourcePos.z, 0.0f);
-        shader.SetUniform1f("u_AmbientLight", 0.05f);
-
         renderer.Clear();
         shader.Bind();
         texture.Bind(0);
         renderer.Draw(va, ib, shader);
         // Second cube
-        glm::mat4 model_mat = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
-        model_mat = glm::scale(model_mat, glm::vec3(2.0f, 1.0f, 1.0f));
-        shader.SetUniformMat4f("u_Model", model_mat);
+        glm::mat4 scube = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
+        scube = glm::scale(scube, glm::vec3(2.0f, 1.0f, 1.0f));
+        shader.SetUniformMat4f("u_Model", scube);
         renderer.Draw(va, ib, shader);
+        // Third cube
+        glm::mat4 tcube = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 3.0f, 8.0f));
+        tcube = glm::rotate(tcube, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.SetUniformMat4f("u_Model", tcube);
+        renderer.Draw(cube_mesh, shader);
+
+        renderer.Draw(scene);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
     }
 }
 
-void Sandbox::ProcessInput(float dt) {
+InputEvents Sandbox::ProcessInput(float dt) {
     int dir = (int)MovementDirection::None;
     if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Forward;
@@ -292,4 +305,6 @@ void Sandbox::ProcessInput(float dt) {
     m_PrevMouseY = mouse_y;
 
     m_Camera.Move((MovementDirection)dir, mouseMove, dt);
+
+    return {dt, (MovementDirection)dir, mouseMove};
 }

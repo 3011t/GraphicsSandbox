@@ -8,7 +8,21 @@ int sign(T val) {
 	return (T(0) < val) - (val < T(0));
 }
 
-Camera::Camera() : m_View(1.0f), m_ViewInverse(1.0f), m_MovementSpeed(5.0f), m_Sensitivity(0.1f) {}
+Camera::Camera()
+  : m_View(1.0f),
+	m_ViewInverse(1.0f),
+	m_Projection(1.0f),
+	m_MovementSpeed(5.0f),
+	m_Sensitivity(0.1f)
+{}
+
+Camera::Camera(const Camera& other)
+  : m_View(glm::mat4(other.m_View)),
+	m_ViewInverse(glm::mat4(other.m_ViewInverse)),
+	m_Projection(glm::mat4(other.m_Projection)),
+	m_MovementSpeed(other.m_MovementSpeed),
+	m_Sensitivity(other.m_Sensitivity)
+{}
 
 void Camera::SetView(const glm::vec3& eye, const glm::vec3& lookAt, const glm::vec3& up) {
 	m_View = glm::lookAt(eye, lookAt, up);

@@ -180,6 +180,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GLWrappers\IndexBuffer.h" />
+    <ClInclude Include="InputEvents.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Sandbox.h" />
     <ClInclude Include="Scene.h" />
