@@ -3,16 +3,6 @@
 // For image loading
 #include <stb_image.h>
 
-Texture::Texture()
-  : m_RendererID(0),
-	m_FilePath(""),
-	m_LocalBuffer(nullptr),
-	m_Width(0),
-	m_Height(0),
-	m_BPP(0),
-	m_InitStatus(false)
-{}
-
 Texture::Texture(const std::string& path)
   : m_RendererID(0),
 	m_FilePath(path),

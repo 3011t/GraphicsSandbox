@@ -23,7 +23,7 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 }
 
 void Renderer::Draw(Scene& scene) const {
-	Shader* shader = scene.m_Shaders[scene.m_currentShader];
+	Shader* shader = scene.m_ActiveShader;
 	
 	shader->Bind();
 	shader->SetUniformMat4f("u_Projection", scene.m_Camera.GetProjection());
@@ -36,7 +36,7 @@ void Renderer::Draw(Scene& scene) const {
 		Model* model = scene.m_Models[scene.m_ModelIndices[instances[i].ModelName]];
 		for (int i = 0; i < model->Meshes.size(); ++i) {
 			Material* material = model->Materials[model->MeshMaterial[i]];
-			material->DiffuseMap.Bind(0);
+			material->DiffuseMap->Bind(0);
 			shader->SetUniform1i("u_Texture", 0);
 
 			model->Meshes[i]->Bind();

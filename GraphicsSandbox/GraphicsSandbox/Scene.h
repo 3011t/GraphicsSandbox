@@ -12,11 +12,8 @@
 
 class Renderer;
 
-// I am aware that the global pointers are ugly and I'm probably asking for trouble by using them,
-// but I'm not sure how I'd go about copying the objects by value without f****** up the global GL state.
-
-// TODO:
-// Separate static and dynamic geometry
+// I am aware that my usage of pointers is ugly and I'm probably asking for trouble by using them,
+// but I'm not sure how I'd go about copying the objects without f****** up the global GL state.
 
 struct Vertex {
 	glm::vec3 Position;
@@ -60,13 +57,17 @@ private:
 };
 
 struct Material {
+	~Material() {
+		delete(DiffuseMap);
+	}
+
 	std::string Name;
 
 	glm::vec3 Ambient;
 	glm::vec3 Diffuse;
 	glm::vec3 Specular;
 	float Shininess;
-	Texture DiffuseMap;
+	Texture* DiffuseMap;
 };
 
 struct Model {
@@ -96,13 +97,17 @@ public:
 	void AddInstance(const Instance& instance);
 
 	void AddCamera(const Camera& camera);
-	void AddShader(const std::string& vertShaderFilename, const std::string& fragShaderFilename);
+	void AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename);
 	void AddLight(const glm::vec3& position);
+
+	void SetShader(const std::string& shaderName);
 private:
-	uint64_t m_currentShader;
+	Shader* m_ActiveShader;
 
 	std::vector<glm::vec3> m_Lights;
 	Camera m_Camera;
+
+	std::unordered_map<std::string, uint64_t> m_ShaderIndices;
 	std::vector<Shader*> m_Shaders;
 
 	std::unordered_map<std::string, uint64_t> m_ModelIndices;

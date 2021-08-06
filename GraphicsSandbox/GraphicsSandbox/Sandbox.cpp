@@ -211,9 +211,16 @@ void Sandbox::Run() {
 
     Scene scene;
     scene.AddCamera(m_Camera);
-    scene.AddShader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
+    scene.AddShader("basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
+    scene.SetShader("basic");
     scene.AddModelFromFile("assets/sponza_scene/crytek-sponza.obj", "Sponza");
-    glm::mat4 sponza_transform = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05f)), glm::vec3(30.0f, 30.f, 30.0f));
+    glm::mat4 sponza_transform = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+    scene.AddInstance({ "Sponza", sponza_transform });
+    sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 30.0f));
+    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
+    scene.AddInstance({ "Sponza", sponza_transform });
+    sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, -30.0f));
+    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
     scene.AddInstance({ "Sponza", sponza_transform });
 
     double prevTime = 0.0;

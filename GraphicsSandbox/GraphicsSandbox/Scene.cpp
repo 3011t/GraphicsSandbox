@@ -23,14 +23,16 @@ void Scene::AddCamera(const Camera& camera) {
 	m_Camera = camera;
 }
 
-void Scene::AddShader(const std::string& vertShaderFilename, const std::string& fragShaderFilename) {
-	Shader* shader = new Shader(vertShaderFilename, fragShaderFilename);
-
-	m_Shaders.push_back(shader);
-	m_currentShader = m_Shaders.size() - 1;
+void Scene::AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename) {
+	m_Shaders.push_back(new Shader(vertShaderFilename, fragShaderFilename));
+	m_ShaderIndices[shaderName] = m_Shaders.size() - 1;
 }
 
 void Scene::AddLight(const glm::vec3& position) {
+}
+
+void Scene::SetShader(const std::string& shaderName) {
+	m_ActiveShader = m_Shaders[m_ShaderIndices[shaderName]];
 }
 
 
@@ -42,7 +44,8 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 	//
 	tinyobj::ObjReaderConfig readerConfig;
 	const size_t lastSlash = filename.rfind('/');
-	if (std::string::npos != lastSlash) readerConfig.mtl_search_path = filename.substr(0, lastSlash);
+	const std::string modelPath = filename.substr(0, lastSlash + 1);
+	if (std::string::npos != lastSlash) readerConfig.mtl_search_path = modelPath;
 	readerConfig.triangulate = true;
 	tinyobj::ObjReader reader;
 
@@ -51,7 +54,6 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 	//
 	if (!reader.ParseFromFile(filename, readerConfig) && !reader.Error().empty()) {
 		std::cout << "TinyObjReader: " << reader.Error();
-		// TODO: Shutdown gracefully
 	}
 
 	if (!reader.Warning().empty()) {
@@ -86,7 +88,7 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 		newMaterial->Diffuse = glm::vec3(diffuse[0], diffuse[1], diffuse[2]);
 		newMaterial->Specular = glm::vec3(specular[0], specular[1], specular[2]);
 		newMaterial->Shininess = shininess;
-		newMaterial->DiffuseMap.Init(diffuseTexname);
+		newMaterial->DiffuseMap = new Texture(modelPath + diffuseTexname);
 
 		newModel->Materials.push_back(newMaterial);
 	}
@@ -95,7 +97,7 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 	auto& attrib = reader.GetAttrib();
 	auto& shapes = reader.GetShapes();
 
-	std::vector<std::unordered_map<uint32_t, uint32_t>> vertexExistenceChecker(materials.size());
+	std::vector<std::unordered_map<int, size_t>> vertexExistenceChecker(materials.size());
 	std::vector<std::vector<Vertex>> newVerts(materials.size());
 	std::vector<std::vector<uint32_t>> newIndices(materials.size());
 
@@ -112,9 +114,11 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 
 				uint32_t materialID = shapes[shapeIndex].mesh.material_ids[faceIndex];
 				tinyobj::index_t vertIndex = shapes[shapeIndex].mesh.indices[indexOffset + v];
-				auto vertPos = vertexExistenceChecker[materialID].find(vertIndex.vertex_index);
 
-				if (true /*vertPos != vertexExistenceChecker[materialID].end()*/) {
+				if (vertexExistenceChecker[materialID].find(vertIndex.vertex_index) != vertexExistenceChecker[materialID].end()) {
+					newIndices[materialID].push_back(vertexExistenceChecker[materialID][vertIndex.vertex_index]);
+				}
+				else {
 					// Create and save the new vertex
 					glm::vec3 position(0.0f);
 					glm::vec3 normal(0.0f);
@@ -132,16 +136,13 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 
 					if (vertIndex.texcoord_index) {
 						texCoords.s = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 0];
-						texCoords.s = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 1];
+						texCoords.t = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 1];
 					}
 
 					Vertex newVertex = { position, normal, texCoords };
 					newVerts[materialID].push_back(newVertex);
 					newIndices[materialID].push_back(newVerts[materialID].size() - 1);
-					//vertexExistenceChecker[materialID][vertIndex.vertex_index] = newVerts.size() - 1;
-				}
-				else {
-					newIndices[materialID].push_back(vertexExistenceChecker[materialID][vertIndex.vertex_index]);
+					vertexExistenceChecker[materialID][vertIndex.vertex_index] = newVerts.size() - 1;
 				}
 			}
 

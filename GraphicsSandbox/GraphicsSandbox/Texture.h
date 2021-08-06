@@ -10,7 +10,6 @@
 
 class Texture {
 public:
-	Texture();
 	Texture(const std::string& path);
 	~Texture();
 
@@ -33,4 +32,3 @@ private:
 	int32_t m_Width, m_Height, m_BPP;
 	bool m_InitStatus;
 };
-
