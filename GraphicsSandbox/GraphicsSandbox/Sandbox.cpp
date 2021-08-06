@@ -76,8 +76,7 @@ Sandbox::Sandbox()
   : m_Window(nullptr),
     m_InitStatus(false),
     m_PrevMouseX(0.0),
-    m_PrevMouseY(0.0),
-    m_DebugMousePosChanged(false)
+    m_PrevMouseY(0.0)
 {
     glfwSetErrorCallback(glfwErrorCallback);
 
@@ -128,10 +127,23 @@ Sandbox::Sandbox()
     // Enable multisapling
     glEnable(GL_MULTISAMPLE);
 
-    m_Camera.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
-    m_Camera.SetView(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    m_Camera.SetMovementSpeed(3.0f);
-    m_Camera.SetSensitivity(1.0f);
+
+    Camera viewerCam;
+    viewerCam.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
+    viewerCam.SetView(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    viewerCam.SetMovementSpeed(3.0f);
+    viewerCam.SetSensitivity(1.0f);
+
+    m_Scene.AddCamera(viewerCam);
+    m_Scene.AddShader("basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
+    m_Scene.SetShader("basic");
+    // Add sponza model
+    m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
+    m_Scene.AddInstance({ "Sponza", glm::scale(glm::mat4(1.0f), glm::vec3(0.01f)) });
+    // Add lissajous
+    m_Scene.AddModelFromFile("Lissajous", "assets/lissajous_crazy.obj");
+    m_Scene.AddInstance({ "Lissajous", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 6.0f, 0.0f)) });
+
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
 
@@ -144,83 +156,10 @@ Sandbox::~Sandbox() {
 }
 
 void Sandbox::Run() {
-    std::vector<Vertex> cube_vertices = {
-        // Front face
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}, { 1.0f,  0.0f}},
-        // Top face
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}, { 1.0f,  0.0f}},
-        // Left face
-        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
-        // Right face
-        {{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}, { 1.0f,  0.0f}},
-        // Bottom face
-        {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}, { 1.0f,  1.0f}},
-        {{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}, { 0.0f,  1.0f}},
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, { 0.0f,  0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, { 1.0f,  0.0f}},
-        // Back face
-        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 1.0f,  1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 0.0f,  1.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 0.0f,  0.0f}},
-        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, { 1.0f,  0.0f}},
-    };
-
-    std::vector<uint32_t> cube_indices = {
-         0,  1,  2,   0,  2,  3, // Front face
-         4,  5,  6,   4,  6,  7, // Top face
-         8,  9, 10,   8, 10, 11, // Left face
-        12, 13, 14,  12, 14, 15, // Right face
-        16, 17, 18,  16, 18, 19, // Bottom face
-        20, 21, 22,  20, 22, 23, // Back face
-    };
-
-    Shader shader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
-
-    Texture texture("textures/BrickWall.jpg");
-    texture.Bind(0);
-
     Renderer renderer;
     renderer.SetClearColour({ 0.1f, 0.4f, 0.7f, 1.0f });
 
     glm::vec3 lightSourcePos = {0.0f, 6.f, 0.0f};
-
-    Scene scene;
-    scene.AddCamera(m_Camera);
-    scene.AddShader("basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
-    scene.SetShader("basic");
-    // Add sponza model
-    scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
-    glm::mat4 sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f));
-    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
-    scene.AddInstance({ "Sponza", sponza_transform });
-    sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 30.0f));
-    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
-    scene.AddInstance({ "Sponza", sponza_transform });
-    sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, -30.0f));
-    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
-    scene.AddInstance({ "Sponza", sponza_transform });
-    // Add cube
-    scene.AddModel("cube", cube_vertices, cube_indices, "textures/BrickWall.jpg");
-    glm::mat4 cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 3.0f));
-    scene.AddInstance({ "cube", cube_transform });
-    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 3.0f));
-    scene.AddInstance({ "cube", cube_transform });
-    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, -3.0f));
-    scene.AddInstance({ "cube", cube_transform });
-    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -3.0f));
-    scene.AddInstance({ "cube", cube_transform });
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -237,17 +176,11 @@ void Sandbox::Run() {
         glfwPollEvents();
         InputEvents events = ProcessInput(dt);
 
-        if (m_DebugMousePosChanged) {
-            const glm::vec4& cameraPos = m_Camera.GetPosition();
-            printf("Current position: X: %f; Y: %f; Z: %f\n", cameraPos.x, cameraPos.y, cameraPos.z);
-            m_DebugMousePosChanged = false;
-        }
-
-        scene.Update(events);
+        m_Scene.Update(events);
 
         /* Render here */
         renderer.Clear();
-        renderer.Draw(scene);
+        renderer.Draw(m_Scene);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
@@ -258,27 +191,21 @@ InputEvents Sandbox::ProcessInput(float dt) {
     int dir = (int)MovementDirection::None;
     if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Forward;
-        m_DebugMousePosChanged = true;
     }
     if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Backward;
-        m_DebugMousePosChanged = true;
     }
     if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Left;
-        m_DebugMousePosChanged = true;
     }
     if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Right;
-        m_DebugMousePosChanged = true;
     }
     if (glfwGetKey(m_Window, GLFW_KEY_R) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Up;
-        m_DebugMousePosChanged = true;
     }
     if (glfwGetKey(m_Window, GLFW_KEY_F) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Down;
-        m_DebugMousePosChanged = true;
     }
 
     double mouse_x, mouse_y;
@@ -290,8 +217,6 @@ InputEvents Sandbox::ProcessInput(float dt) {
     }
     m_PrevMouseX = mouse_x;
     m_PrevMouseY = mouse_y;
-
-    m_Camera.Move((MovementDirection)dir, mouseMove, dt);
 
     return {dt, (MovementDirection)dir, mouseMove};
 }

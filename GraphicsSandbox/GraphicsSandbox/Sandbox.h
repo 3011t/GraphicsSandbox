@@ -30,9 +30,8 @@ private:
 	InputEvents ProcessInput(float dt);
 
 	GLFWwindow* m_Window;
+	Scene m_Scene;
 	bool m_InitStatus;
-	Camera m_Camera;
 	double m_PrevMouseX;
 	double m_PrevMouseY;
-	bool m_DebugMousePosChanged;
 };

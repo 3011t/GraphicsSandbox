@@ -109,8 +109,8 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 	auto& attrib = reader.GetAttrib();
 	auto& shapes = reader.GetShapes();
 
-	std::vector<std::vector<Vertex>> newVerts(materials.size());
-	std::vector<std::vector<uint32_t>> newIndices(materials.size());
+	std::vector<std::vector<Vertex>> newVerts(materials.size() > 0 ? materials.size() : 1);
+	std::vector<std::vector<uint32_t>> newIndices(materials.size() > 0 ? materials.size() : 1);
 
 	// Loop over shapes
 	for (uint64_t shapeIndex = 0; shapeIndex < shapes.size(); ++shapeIndex) {
@@ -120,10 +120,11 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 		for (uint64_t faceIndex = 0; faceIndex < shapes[shapeIndex].mesh.num_face_vertices.size(); ++faceIndex) {
 
 			// Loop over verts on polygons
+			// This part creates massive memory overhead, because I'm duplicating vertices like crazy, TODO
 			uint64_t faceVertices = shapes[shapeIndex].mesh.num_face_vertices[faceIndex];
 			for (uint64_t v = 0; v < faceVertices; ++v) {
 
-				uint32_t materialID = shapes[shapeIndex].mesh.material_ids[faceIndex];
+				uint32_t materialID = materials.size() > 0 ? shapes[shapeIndex].mesh.material_ids[faceIndex] : 0;
 				tinyobj::index_t vertIndex = shapes[shapeIndex].mesh.indices[indexOffset + v];
 
 				// Create and save the new vertex
@@ -135,13 +136,13 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 				position.y = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 1];
 				position.z = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 2];
 
-				if (vertIndex.normal_index) {
+				if (vertIndex.normal_index >= 0) {
 					normal.x = attrib.normals[3 * size_t(vertIndex.normal_index) + 0];
 					normal.y = attrib.normals[3 * size_t(vertIndex.normal_index) + 1];
 					normal.z = attrib.normals[3 * size_t(vertIndex.normal_index) + 2];
 				}
 
-				if (vertIndex.texcoord_index) {
+				if (vertIndex.texcoord_index >= 0) {
 					texCoords.s = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 0];
 					texCoords.t = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 1];
 				}
@@ -155,7 +156,7 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 		}
 	}
 
-	for (int i = 0; i < materials.size(); ++i) {
+	for (int i = 0; i < (materials.size() > 0 ? materials.size() : 1); ++i) {
 		newModel->Meshes.push_back(new Mesh("", newVerts[i], newIndices[i]));
 		newModel->MeshMaterial.push_back(i);
 	}
