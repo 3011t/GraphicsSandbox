@@ -97,7 +97,6 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 	auto& attrib = reader.GetAttrib();
 	auto& shapes = reader.GetShapes();
 
-	std::vector<std::unordered_map<int, size_t>> vertexExistenceChecker(materials.size());
 	std::vector<std::vector<Vertex>> newVerts(materials.size());
 	std::vector<std::vector<uint32_t>> newIndices(materials.size());
 
@@ -115,35 +114,29 @@ void Scene::AddModelFromFile(const std::string& filename, const std::string& mod
 				uint32_t materialID = shapes[shapeIndex].mesh.material_ids[faceIndex];
 				tinyobj::index_t vertIndex = shapes[shapeIndex].mesh.indices[indexOffset + v];
 
-				if (vertexExistenceChecker[materialID].find(vertIndex.vertex_index) != vertexExistenceChecker[materialID].end()) {
-					newIndices[materialID].push_back(vertexExistenceChecker[materialID][vertIndex.vertex_index]);
+				// Create and save the new vertex
+				glm::vec3 position(0.0f);
+				glm::vec3 normal(0.0f);
+				glm::vec2 texCoords(0.0f);
+
+				position.x = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 0];
+				position.y = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 1];
+				position.z = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 2];
+
+				if (vertIndex.normal_index) {
+					normal.x = attrib.normals[3 * size_t(vertIndex.normal_index) + 0];
+					normal.y = attrib.normals[3 * size_t(vertIndex.normal_index) + 1];
+					normal.z = attrib.normals[3 * size_t(vertIndex.normal_index) + 2];
 				}
-				else {
-					// Create and save the new vertex
-					glm::vec3 position(0.0f);
-					glm::vec3 normal(0.0f);
-					glm::vec2 texCoords(0.0f);
 
-					position.x = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 0];
-					position.y = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 1];
-					position.z = attrib.vertices[3 * size_t(vertIndex.vertex_index) + 2];
-
-					if (vertIndex.normal_index) {
-						normal.x = attrib.normals[3 * size_t(vertIndex.normal_index) + 0];
-						normal.y = attrib.normals[3 * size_t(vertIndex.normal_index) + 1];
-						normal.z = attrib.normals[3 * size_t(vertIndex.normal_index) + 2];
-					}
-
-					if (vertIndex.texcoord_index) {
-						texCoords.s = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 0];
-						texCoords.t = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 1];
-					}
-
-					Vertex newVertex = { position, normal, texCoords };
-					newVerts[materialID].push_back(newVertex);
-					newIndices[materialID].push_back(newVerts[materialID].size() - 1);
-					vertexExistenceChecker[materialID][vertIndex.vertex_index] = newVerts.size() - 1;
+				if (vertIndex.texcoord_index) {
+					texCoords.s = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 0];
+					texCoords.t = attrib.texcoords[2 * size_t(vertIndex.texcoord_index) + 1];
 				}
+
+				Vertex newVertex = { position, normal, texCoords };
+				newVerts[materialID].push_back(newVertex);
+				newIndices[materialID].push_back(newVerts[materialID].size() - 1);
 			}
 
 			indexOffset += faceVertices;
