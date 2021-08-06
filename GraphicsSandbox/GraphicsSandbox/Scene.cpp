@@ -109,8 +109,8 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 	auto& attrib = reader.GetAttrib();
 	auto& shapes = reader.GetShapes();
 
-	std::vector<std::vector<Vertex>> newVerts(materials.size() > 0 ? materials.size() : 1);
-	std::vector<std::vector<uint32_t>> newIndices(materials.size() > 0 ? materials.size() : 1);
+	std::vector<std::vector<Vertex>> newVerts(materials.size());
+	std::vector<std::vector<uint32_t>> newIndices(materials.size());
 
 	// Loop over shapes
 	for (uint64_t shapeIndex = 0; shapeIndex < shapes.size(); ++shapeIndex) {
@@ -124,7 +124,7 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 			uint64_t faceVertices = shapes[shapeIndex].mesh.num_face_vertices[faceIndex];
 			for (uint64_t v = 0; v < faceVertices; ++v) {
 
-				uint32_t materialID = materials.size() > 0 ? shapes[shapeIndex].mesh.material_ids[faceIndex] : 0;
+				uint32_t materialID = shapes[shapeIndex].mesh.material_ids[faceIndex];
 				tinyobj::index_t vertIndex = shapes[shapeIndex].mesh.indices[indexOffset + v];
 
 				// Create and save the new vertex
@@ -156,7 +156,7 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 		}
 	}
 
-	for (int i = 0; i < (materials.size() > 0 ? materials.size() : 1); ++i) {
+	for (int i = 0; i < materials.size(); ++i) {
 		newModel->Meshes.push_back(new Mesh("", newVerts[i], newIndices[i]));
 		newModel->MeshMaterial.push_back(i);
 	}

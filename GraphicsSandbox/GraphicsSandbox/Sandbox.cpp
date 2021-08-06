@@ -140,9 +140,6 @@ Sandbox::Sandbox()
     // Add sponza model
     m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
     m_Scene.AddInstance({ "Sponza", glm::scale(glm::mat4(1.0f), glm::vec3(0.01f)) });
-    // Add lissajous
-    m_Scene.AddModelFromFile("Lissajous", "assets/lissajous_crazy.obj");
-    m_Scene.AddInstance({ "Lissajous", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 6.0f, 0.0f)) });
 
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);

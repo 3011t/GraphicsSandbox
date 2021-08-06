@@ -35,11 +35,9 @@ void Renderer::Draw(Scene& scene) const {
 
 		Model* model = scene.m_Models[scene.m_ModelIndices[instances[i].ModelName]];
 		for (int i = 0; i < model->Meshes.size(); ++i) {
-			if (model->Materials.size() > 0) {
-				Material* material = model->Materials[model->MeshMaterial[i]];
-				material->DiffuseMap->Bind(0);
-				shader->SetUniform1i("u_Texture", 0);
-			}
+			Material* material = model->Materials[model->MeshMaterial[i]];
+			material->DiffuseMap->Bind(0);
+			shader->SetUniform1i("u_Texture", 0);
 
 			model->Meshes[i]->Bind();
 			glDrawElements(GL_TRIANGLES, model->Meshes[i]->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
