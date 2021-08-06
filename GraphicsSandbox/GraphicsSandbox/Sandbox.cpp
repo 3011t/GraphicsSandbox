@@ -186,19 +186,6 @@ void Sandbox::Run() {
         20, 21, 22,  20, 22, 23, // Back face
     };
 
-    VertexArray va = VertexArray();
-    VertexBuffer vb = VertexBuffer(&cube_vertices[0], cube_vertices.size() * sizeof(Vertex));
-    IndexBuffer ib = IndexBuffer(&cube_indices[0], cube_indices.size());
-
-    VertexBufferLayout layout;
-    layout.Push<float>(3); // Position
-    layout.Push<float>(3); // Normal
-    layout.Push<float>(2); // Tex Coords
-
-    va.AddBuffer(vb, layout);
-
-    Mesh cube_mesh("cube", cube_vertices, cube_indices);
-
     Shader shader("shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
 
     Texture texture("textures/BrickWall.jpg");
@@ -213,8 +200,10 @@ void Sandbox::Run() {
     scene.AddCamera(m_Camera);
     scene.AddShader("basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
     scene.SetShader("basic");
-    scene.AddModelFromFile("assets/sponza_scene/crytek-sponza.obj", "Sponza");
-    glm::mat4 sponza_transform = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f));
+    // Add sponza model
+    scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
+    glm::mat4 sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f));
+    sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
     scene.AddInstance({ "Sponza", sponza_transform });
     sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 30.0f));
     sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
@@ -222,6 +211,16 @@ void Sandbox::Run() {
     sponza_transform = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, -30.0f));
     sponza_transform = glm::scale(sponza_transform, glm::vec3(0.01f));
     scene.AddInstance({ "Sponza", sponza_transform });
+    // Add cube
+    scene.AddModel("cube", cube_vertices, cube_indices, "textures/BrickWall.jpg");
+    glm::mat4 cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 3.0f));
+    scene.AddInstance({ "cube", cube_transform });
+    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 3.0f));
+    scene.AddInstance({ "cube", cube_transform });
+    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, -3.0f));
+    scene.AddInstance({ "cube", cube_transform });
+    cube_transform = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -3.0f));
+    scene.AddInstance({ "cube", cube_transform });
 
     double prevTime = 0.0;
     /* Loop until the user closes the window */
@@ -247,26 +246,7 @@ void Sandbox::Run() {
         scene.Update(events);
 
         /* Render here */
-        shader.Bind();
-        shader.SetUniformMat4f("u_Projection", m_Camera.GetProjection());
-        shader.SetUniformMat4f("u_View", m_Camera.GetView());
-        shader.SetUniformMat4f("u_Model", glm::mat4(1.0f));
-
         renderer.Clear();
-        shader.Bind();
-        texture.Bind(0);
-        renderer.Draw(va, ib, shader);
-        // Second cube
-        glm::mat4 scube = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 5.0f));
-        scube = glm::scale(scube, glm::vec3(2.0f, 1.0f, 1.0f));
-        shader.SetUniformMat4f("u_Model", scube);
-        renderer.Draw(va, ib, shader);
-        // Third cube
-        glm::mat4 tcube = glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 3.0f, 8.0f));
-        tcube = glm::rotate(tcube, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-        shader.SetUniformMat4f("u_Model", tcube);
-        renderer.Draw(cube_mesh, shader);
-
         renderer.Draw(scene);
 
         /* Swap front and back buffers */

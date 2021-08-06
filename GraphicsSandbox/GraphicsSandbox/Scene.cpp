@@ -36,9 +36,21 @@ void Scene::SetShader(const std::string& shaderName) {
 }
 
 
+void Scene::AddModel(const std::string& modelName, const std::vector<Vertex>& vertices, const std::vector<uint32_t> indices, const std::string& texName) {
+	Model* newModel = new Model();
+
+	newModel->Meshes.push_back(new Mesh("", vertices, indices));
+	newModel->Materials.push_back(new Material());
+	newModel->Materials[0]->DiffuseMap = new Texture(texName);
+	newModel->MeshMaterial.push_back(0);
+
+	m_Models.push_back(newModel);
+	m_ModelIndices[modelName] = m_Models.size() - 1;
+}
+
 // This Method is (hopefully) written in such a way as to minimize the amount of memory and draw calls that are
 // necessary to draw the model. (Without using multiple texture units.)
-void Scene::AddModelFromFile(const std::string& filename, const std::string& modelName) {
+void Scene::AddModelFromFile(const std::string& modelName, const std::string& filename) {
 	//
 	// Loader initialization
 	//
