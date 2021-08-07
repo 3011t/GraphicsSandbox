@@ -23,15 +23,21 @@ void Scene::AddCamera(const Camera& camera) {
 	m_Camera = camera;
 }
 
+void Scene::AddLight(const glm::vec3& position) {
+}
+
 void Scene::AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename) {
 	m_Shaders.push_back(new Shader(vertShaderFilename, fragShaderFilename));
 	m_ShaderIndices[shaderName] = m_Shaders.size() - 1;
 }
 
-void Scene::AddLight(const glm::vec3& position) {
+void Scene::ReloadShaders() {
+	for (size_t i = 0; i < m_Shaders.size(); ++i) {
+		m_Shaders[i]->Reload();
+	}
 }
 
-void Scene::SetShader(const std::string& shaderName) {
+void Scene::SetActiveShader(const std::string& shaderName) {
 	m_ActiveShader = m_Shaders[m_ShaderIndices[shaderName]];
 }
 

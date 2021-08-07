@@ -1,11 +1,19 @@
 #include "Shader.h"
 
-Shader::Shader(const std::string& vertex_filepath, const std::string& fragment_filepath) : m_VertexFilePath(vertex_filepath), m_FragmentFilePath(fragment_filepath) {
+Shader::Shader(const std::string& vertex_filepath, const std::string& fragment_filepath)
+  : m_VertexFilePath(vertex_filepath),
+    m_FragmentFilePath(fragment_filepath)
+{
     m_RendererID = CreateShader(GetShaderSource(m_VertexFilePath), GetShaderSource(m_FragmentFilePath));
 }
 
 Shader::~Shader() {
     glDeleteProgram(m_RendererID);
+}
+
+void Shader::Reload() {
+    glDeleteProgram(m_RendererID);
+    m_RendererID = CreateShader(GetShaderSource(m_VertexFilePath), GetShaderSource(m_FragmentFilePath));
 }
 
 void Shader::Bind() const {

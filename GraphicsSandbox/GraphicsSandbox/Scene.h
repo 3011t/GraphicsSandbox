@@ -98,10 +98,12 @@ public:
 	void AddInstance(const Instance& instance);
 
 	void AddCamera(const Camera& camera);
-	void AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename);
 	void AddLight(const glm::vec3& position);
 
-	void SetShader(const std::string& shaderName);
+
+	void AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename);
+	void SetActiveShader(const std::string& shaderName);
+	void ReloadShaders();
 private:
 	Shader* m_ActiveShader;
 

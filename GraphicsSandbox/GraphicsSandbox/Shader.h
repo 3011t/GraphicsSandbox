@@ -16,6 +16,8 @@ public:
 	Shader(const std::string& vertex_filepath, const std::string& fragment_filepath);
 	~Shader();
 
+	void Reload();
+
 	void Bind() const;
 	void Unbind() const;
 

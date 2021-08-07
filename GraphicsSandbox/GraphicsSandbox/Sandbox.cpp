@@ -135,8 +135,11 @@ Sandbox::Sandbox()
     viewerCam.SetSensitivity(1.0f);
 
     m_Scene.AddCamera(viewerCam);
-    m_Scene.AddShader("basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
-    m_Scene.SetShader("basic");
+    m_Scene.AddShader("Basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
+    m_Scene.AddShader("Normal", "shaders/02_vs_normal.glsl", "shaders/02_fs_normal.glsl");
+    m_Scene.AddShader("Depth", "shaders/03_vs_depth.glsl", "shaders/03_fs_depth.glsl");
+    m_Scene.AddShader("Phong", "shaders/04_vs_phong.glsl", "shaders/04_fs_phong.glsl");
+    m_Scene.SetActiveShader("Basic");
     // Add sponza model
     m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
     m_Scene.AddInstance({ "Sponza", glm::scale(glm::mat4(1.0f), glm::vec3(0.01f)) });
@@ -185,6 +188,7 @@ void Sandbox::Run() {
 }
 
 InputEvents Sandbox::ProcessInput(float dt) {
+    // Modement reader
     int dir = (int)MovementDirection::None;
     if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Forward;
@@ -203,6 +207,25 @@ InputEvents Sandbox::ProcessInput(float dt) {
     }
     if (glfwGetKey(m_Window, GLFW_KEY_F) == GLFW_PRESS) {
         dir |= (int)MovementDirection::Down;
+    }
+
+    // Shader switching code
+    if (glfwGetKey(m_Window, GLFW_KEY_1) == GLFW_PRESS) {
+        m_Scene.SetActiveShader("Basic");
+    }
+    else if (glfwGetKey(m_Window, GLFW_KEY_2) == GLFW_PRESS) {
+        m_Scene.SetActiveShader("Normal");
+    }
+    else if (glfwGetKey(m_Window, GLFW_KEY_3) == GLFW_PRESS) {
+        m_Scene.SetActiveShader("Depth");
+    }
+    else if (glfwGetKey(m_Window, GLFW_KEY_4) == GLFW_PRESS) {
+        m_Scene.SetActiveShader("Phong");
+    }
+
+    // Useful shortcuts
+    if (glfwGetKey(m_Window, GLFW_KEY_Q) == GLFW_PRESS) {
+        m_Scene.ReloadShaders();
     }
 
     double mouse_x, mouse_y;
