@@ -6,11 +6,11 @@ in vec4 v_Pos;
 in vec3 v_Normal;
 in vec2 v_TexCoord;
 
-uniform sampler2D u_Texture;
+uniform sampler2D u_DiffuseTexture;
 
 void main()
 {
-    vec4 texColour = texture(u_Texture, v_TexCoord);
+    vec4 texColour = texture(u_DiffuseTexture, v_TexCoord);
 
     if(texColour.a < 0.5) discard;
 

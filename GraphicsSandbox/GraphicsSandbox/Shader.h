@@ -7,9 +7,13 @@
 
 // stdlib includes
 #include<string>
+#include<sstream>
+#include<iostream>
 #include<fstream>
 #include<cstdio>
 #include<unordered_map>
+
+struct Light;
 
 class Shader {
 public:
@@ -22,9 +26,12 @@ public:
 	void Unbind() const;
 
 	void SetUniform4f(const std::string& name, float f0, float f1, float f2, float f3);
+	void SetUniform3f(const std::string& name, float f0, float f1, float f2);
 	void SetUniform1f(const std::string& name, float value);
 	void SetUniform1i(const std::string& name, int32_t value);
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+
+	uint32_t SetLights(const std::vector<Light>& lights);
 private:
 	uint32_t CompileShader(uint32_t type, const std::string& source);
 	std::string GetShaderSource(const std::string& filename);

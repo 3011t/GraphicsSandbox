@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "Scene.h"
+
 Shader::Shader(const std::string& vertex_filepath, const std::string& fragment_filepath)
   : m_VertexFilePath(vertex_filepath),
     m_FragmentFilePath(fragment_filepath)
@@ -12,7 +14,9 @@ Shader::~Shader() {
 }
 
 void Shader::Reload() {
+    // This doesn't always work as expected(the compile doesn't happen for some reason)
     glDeleteProgram(m_RendererID);
+    m_RendererID = 0;
     m_RendererID = CreateShader(GetShaderSource(m_VertexFilePath), GetShaderSource(m_FragmentFilePath));
 }
 
@@ -28,6 +32,10 @@ void Shader::SetUniform4f(const std::string& name, float f0, float f1, float f2,
     glUniform4f(GetUniformLocation(name), f0, f1, f2, f3);
 }
 
+void Shader::SetUniform3f(const std::string& name, float f0, float f1, float f2) {
+    glUniform3f(GetUniformLocation(name), f0, f1, f2);
+}
+
 void Shader::SetUniform1f(const std::string& name, float value) {
     glUniform1f(GetUniformLocation(name), value);
 }
@@ -38,6 +46,25 @@ void Shader::SetUniform1i(const std::string& name, int32_t value) {
 
 void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+}
+
+// This is horribly inefficient, TODO: Rewrite ASAP
+// Approach: Add UniformBuffer class, make a private member,
+// guard against usage on shader that doesn't support this uniform buffer.
+uint32_t Shader::SetLights(const std::vector<Light>& lights) {
+    uint32_t lightsUBO;
+    glGenBuffers(1, &lightsUBO);
+    glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+    glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(Light), nullptr, GL_STATIC_DRAW);
+
+    uint32_t uniformBlockIndexLights = glGetUniformBlockIndex(m_RendererID, "u_BlockLights");
+    glUniformBlockBinding(m_RendererID, uniformBlockIndexLights, 0);
+
+    glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockIndexLights, lightsUBO);
+
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, lights.size() * sizeof(Light), &lights[0]);
+
+    return lightsUBO;
 }
 
 int32_t Shader::GetUniformLocation(const std::string& name) {
@@ -76,6 +103,9 @@ uint32_t Shader::CompileShader(uint32_t type, const std::string& source)
 std::string Shader::GetShaderSource(const std::string& filename) {
     std::ifstream file(filename);
 
+    /*
+    if (!file.is_open()) printf("The file [%s] is not open!", filename.c_str());
+
     std::string shaderSource = "";
     std::string line;
     while (getline(file, line)) {
@@ -83,6 +113,12 @@ std::string Shader::GetShaderSource(const std::string& filename) {
     }
     file.close();
     return shaderSource;
+    */
+
+    std::stringstream fileBuffer;
+    fileBuffer << file.rdbuf();
+    file.close();
+    return fileBuffer.str();
 }
 
 uint32_t Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {

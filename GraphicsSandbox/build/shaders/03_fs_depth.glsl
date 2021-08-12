@@ -6,8 +6,6 @@ in vec4 v_Pos;
 in vec3 v_Normal;
 in vec2 v_TexCoord;
 
-uniform sampler2D u_Texture;
-
 float near = 1.0f;
 float far = 100.0f;
 

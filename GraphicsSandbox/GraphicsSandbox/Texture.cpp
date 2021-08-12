@@ -9,20 +9,18 @@ Texture::Texture(const std::string& path)
 	m_LocalBuffer(nullptr),
 	m_Width(0),
 	m_Height(0),
-	m_BPP(0),
-	m_InitStatus(true)
+	m_BPP(0)
 {
 	LoadFromFile();
 }
 
 Texture::~Texture() {
-	if (m_InitStatus) glDeleteTextures(1, &m_RendererID);
+	glDeleteTextures(1, &m_RendererID);
 }
 
 void Texture::Init(const std::string& path) {
 	m_FilePath = path;
 	LoadFromFile();
-	m_InitStatus = true;
 }
 
 void Texture::Reload() {
@@ -34,8 +32,6 @@ void Texture::UpdatePath(const std::string& path) {
 }
 
 void Texture::Bind(uint32_t slot) const {
-	if (!m_InitStatus) printf("This texture isn't initialized!");
-
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 }

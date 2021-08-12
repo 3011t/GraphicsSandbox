@@ -30,5 +30,4 @@ private:
 	std::string m_FilePath;
 	uint8_t* m_LocalBuffer;
 	int32_t m_Width, m_Height, m_BPP;
-	bool m_InitStatus;
 };

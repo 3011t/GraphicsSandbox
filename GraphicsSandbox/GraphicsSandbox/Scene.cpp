@@ -6,6 +6,39 @@
 
 #include <iostream>
 
+// Additions to be able to hash Vertices
+#pragma region Vertex hashing
+#include <glm/gtx/hash.hpp>
+inline void hashCombine(size_t& seed, size_t hash) {
+	hash += 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	seed ^= hash;
+}
+namespace std {
+	template <>
+	struct hash<Vertex> {
+		inline size_t operator()(const Vertex& v) const {
+			std::hash<glm::vec3> vec3hasher;
+			std::hash<glm::vec2> vec2hasher;
+
+			size_t seed = 0;
+
+			hashCombine(seed, vec3hasher(v.Position));
+			hashCombine(seed, vec3hasher(v.Normal));
+			hashCombine(seed, vec2hasher(v.TexCoords));
+
+			return seed;
+		}
+	};
+
+	template<>
+	struct equal_to<Vertex> {
+		inline bool operator()(const Vertex& u, const Vertex& v) const {
+			return u == v;
+		}
+	};
+};
+#pragma endregion
+
 Scene::~Scene() {
 	for (auto shader : m_Shaders) delete(shader);
 	for (auto model : m_Models) delete(model);
@@ -23,7 +56,8 @@ void Scene::AddCamera(const Camera& camera) {
 	m_Camera = camera;
 }
 
-void Scene::AddLight(const glm::vec3& position) {
+void Scene::AddLight(const Light& light) {
+	m_Lights.push_back(light);
 }
 
 void Scene::AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename) {
@@ -39,8 +73,8 @@ void Scene::ReloadShaders() {
 
 void Scene::SetActiveShader(const std::string& shaderName) {
 	m_ActiveShader = m_Shaders[m_ShaderIndices[shaderName]];
+	m_ActiveShaderName = shaderName;
 }
-
 
 void Scene::AddModel(const std::string& modelName, const std::vector<Vertex>& vertices, const std::vector<uint32_t> indices, const std::string& texName) {
 	Model* newModel = new Model();
@@ -54,8 +88,8 @@ void Scene::AddModel(const std::string& modelName, const std::vector<Vertex>& ve
 	m_ModelIndices[modelName] = m_Models.size() - 1;
 }
 
-// This Method is (hopefully) written in such a way as to minimize the amount of memory and draw calls that are
-// necessary to draw the model. (Without using multiple texture units.)
+// I should probably split this chonkster of a function into a few smaller ones,
+// but I'm probably not going to look at this anymore, so it's not strictly necessary.
 void Scene::AddModelFromFile(const std::string& modelName, const std::string& filename) {
 	//
 	// Loader initialization
@@ -110,13 +144,23 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 
 		newModel->Materials.push_back(newMaterial);
 	}
+	// Default material in case there is no other
+	if (materials.size() == 0) {
+		Material* defaultMaterial = new Material;
+		defaultMaterial->Ambient = glm::vec3(0.0, 0.0, 0.1);
+		defaultMaterial->Diffuse = glm::vec3(0.8, 0.8, 0.8);
+		defaultMaterial->Specular = glm::vec3(1.0, 1.0, 1.0);
+		defaultMaterial->Shininess = 2.0f;
+		newModel->Materials.push_back(defaultMaterial);
+	}
 
 	// Parse shapes/meshes
 	auto& attrib = reader.GetAttrib();
 	auto& shapes = reader.GetShapes();
 
-	std::vector<std::vector<Vertex>> newVerts(materials.size());
-	std::vector<std::vector<uint32_t>> newIndices(materials.size());
+	std::vector<std::vector<Vertex>> newVerts(materials.size() > 0 ? materials.size() : 1);
+	std::vector<std::vector<uint32_t>> newIndices(materials.size() > 0 ? materials.size() : 1);
+	std::vector<std::unordered_map<Vertex, uint32_t>> vertIndices(materials.size() > 0 ? materials.size() : 1);
 
 	// Loop over shapes
 	for (uint64_t shapeIndex = 0; shapeIndex < shapes.size(); ++shapeIndex) {
@@ -131,6 +175,7 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 			for (uint64_t v = 0; v < faceVertices; ++v) {
 
 				uint32_t materialID = shapes[shapeIndex].mesh.material_ids[faceIndex];
+				materialID = shapes[shapeIndex].mesh.material_ids[faceIndex] <= materials.size() ? materialID : 0;
 				tinyobj::index_t vertIndex = shapes[shapeIndex].mesh.indices[indexOffset + v];
 
 				// Create and save the new vertex
@@ -154,15 +199,22 @@ void Scene::AddModelFromFile(const std::string& modelName, const std::string& fi
 				}
 
 				Vertex newVertex = { position, normal, texCoords };
-				newVerts[materialID].push_back(newVertex);
-				newIndices[materialID].push_back(newVerts[materialID].size() - 1);
+
+				if (vertIndices[materialID].find(newVertex) == vertIndices[materialID].end()) {
+					newVerts[materialID].push_back(newVertex);
+					newIndices[materialID].push_back(newVerts[materialID].size() - 1);
+					vertIndices[materialID][newVertex] = newVerts[materialID].size() - 1;
+				}
+				else {
+					newIndices[materialID].push_back(vertIndices[materialID][newVertex]);
+				}
 			}
 
 			indexOffset += faceVertices;
 		}
 	}
 
-	for (int i = 0; i < materials.size(); ++i) {
+	for (int i = 0; i < (materials.size() > 0 ? materials.size() : 1); ++i) {
 		newModel->Meshes.push_back(new Mesh("", newVerts[i], newIndices[i]));
 		newModel->MeshMaterial.push_back(i);
 	}

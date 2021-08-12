@@ -29,6 +29,7 @@ public:
 	const glm::vec4& GetPosition() { return m_ViewInverse[3]; }
 	const glm::mat4& GetView() const { return m_View; }
 	const glm::mat4& GetInvView() const { return m_ViewInverse; }
+	const glm::vec4& GetViewDirection() const { return m_View[2]; }
 
 	void SetProjection(float fov, float aspect, float near, float far);
 	const glm::mat4& GetProjection() const { return m_Projection; }

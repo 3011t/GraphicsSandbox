@@ -6,8 +6,6 @@ in vec4 v_Pos;
 in vec3 v_Normal;
 in vec2 v_TexCoord;
 
-uniform sampler2D u_Texture;
-
 void main()
 {
     vec4 normalCol = vec4(v_Normal.x, v_Normal.y, v_Normal.z, 1.0f);

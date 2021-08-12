@@ -19,6 +19,10 @@ struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
+
+	inline bool operator==(const Vertex& other) const {
+		return Position == other.Position && Normal == other.Normal && TexCoords == other.TexCoords;
+	}
 };
 
 class Mesh {
@@ -58,7 +62,7 @@ private:
 
 struct Material {
 	~Material() {
-		delete(DiffuseMap);
+		if (DiffuseMap) delete(DiffuseMap);
 	}
 
 	std::string Name;
@@ -67,13 +71,13 @@ struct Material {
 	glm::vec3 Diffuse;
 	glm::vec3 Specular;
 	float Shininess;
-	Texture* DiffuseMap;
+	Texture* DiffuseMap = nullptr;
 };
 
 struct Model {
 	~Model() {
 		for (auto mesh : Meshes) delete(mesh);
-		for (auto material : Materials) delete(material);
+		for (auto material : Materials) if (material) delete(material);
 	}
 
 	std::string Name;
@@ -87,6 +91,25 @@ struct Instance {
 	glm::mat4 Transform;
 };
 
+enum class LightType : uint32_t {
+	PointLight, Directional
+};
+
+// Aligning this to the struct in the 05-fs was a massive pain
+struct Light {
+	float Range;
+	float Radius; // In Radians
+	float Power;
+	LightType Type;
+	glm::vec4 Position;
+	glm::vec4 Direction;
+	glm::vec4 Colour;
+};
+
+struct Framebuffer {
+
+};
+
 class Scene {
 public:
 	~Scene();
@@ -98,18 +121,14 @@ public:
 	void AddInstance(const Instance& instance);
 
 	void AddCamera(const Camera& camera);
-	void AddLight(const glm::vec3& position);
-
+	void AddLight(const Light& light);
 
 	void AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename);
 	void SetActiveShader(const std::string& shaderName);
 	void ReloadShaders();
 private:
+	std::string m_ActiveShaderName;
 	Shader* m_ActiveShader;
-
-	std::vector<glm::vec3> m_Lights;
-	Camera m_Camera;
-
 	std::unordered_map<std::string, uint64_t> m_ShaderIndices;
 	std::vector<Shader*> m_Shaders;
 
@@ -117,6 +136,9 @@ private:
 	std::vector<Model*> m_Models;
 	std::vector<Instance> m_ModelInstances;
 
+	Camera m_Camera;
+
+	std::vector<Light> m_Lights;
+
 	friend Renderer; // Yes, I'm letting Renderer touch the private parts of the Scene objects, it makes things easier. ;-)
 };
-

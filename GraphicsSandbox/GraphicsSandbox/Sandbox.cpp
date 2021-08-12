@@ -127,23 +127,30 @@ Sandbox::Sandbox()
     // Enable multisapling
     glEnable(GL_MULTISAMPLE);
 
-
+    // Add the camera for the scene(I might add support for more cameras later, I'd probably do it similarly to how I'm handling the shaders)
     Camera viewerCam;
     viewerCam.SetProjection(glm::radians(90.0f), (16.0f / 9.0f), 0.1f, 1000.0f);
     viewerCam.SetView(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     viewerCam.SetMovementSpeed(3.0f);
     viewerCam.SetSensitivity(1.0f);
-
     m_Scene.AddCamera(viewerCam);
+
+    // Add all shaders that are to be used
     m_Scene.AddShader("Basic", "shaders/01_vs_basic.glsl", "shaders/01_fs_basic.glsl");
     m_Scene.AddShader("Normal", "shaders/02_vs_normal.glsl", "shaders/02_fs_normal.glsl");
     m_Scene.AddShader("Depth", "shaders/03_vs_depth.glsl", "shaders/03_fs_depth.glsl");
     m_Scene.AddShader("Phong", "shaders/04_vs_phong.glsl", "shaders/04_fs_phong.glsl");
-    m_Scene.SetActiveShader("Basic");
+    m_Scene.AddShader("Shadows", "shaders/05_vs_shadows.glsl", "shaders/05_fs_shadows.glsl");
+    m_Scene.SetActiveShader("Phong"); // This sets the "default" shader for the program
+    
     // Add sponza model
-    m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj");
+    m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj"); // https://clara.io/view/ff65ec60-497e-4685-8b3f-726988b347f3 I have renamed a few files
     m_Scene.AddInstance({ "Sponza", glm::scale(glm::mat4(1.0f), glm::vec3(0.01f)) });
+    //m_Scene.AddModelFromFile("Lissajous", "assets/lissajous.obj"); // This is was generated from one of my assignments in an earlier course, it's not available online, because it takes up almost 500MB
+    //m_Scene.AddInstance({"Lissajous", glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 6.0, 0.0))});
 
+    //m_Scene.AddLight({ 0.0, 0.0, 1.0, LightType::Directional, {0.0, 0.0, 0.0, 0.0}, {2.0, 8.0, 2.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
+    m_Scene.AddLight({ 100.0, glm::pi<float>() * 0.25, 0.7, LightType::PointLight, {0.0, 3.0, 0.0, 0.0}, {-1.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
 
@@ -221,6 +228,9 @@ InputEvents Sandbox::ProcessInput(float dt) {
     }
     else if (glfwGetKey(m_Window, GLFW_KEY_4) == GLFW_PRESS) {
         m_Scene.SetActiveShader("Phong");
+    }
+    else if (glfwGetKey(m_Window, GLFW_KEY_5) == GLFW_PRESS) {
+        m_Scene.SetActiveShader("Shadows");
     }
 
     // Useful shortcuts
