@@ -1,3 +1,6 @@
+// The layout of this class is inspired by TheCherno's OpenGL tutorial series.
+// I have added a few methods of my own(currently Reload() and SetLights()).
+
 #pragma once
 
 // Library includes

@@ -13,8 +13,9 @@ public:
 
 	void Clear() const;
 
-	// Draw functions
+	// Theis method is inspired by TheCherno's OpenGL tutorial series.
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+	
 	void Draw(const Mesh& mesh, const Shader& shader) const;
 	void Draw(Scene& scene) const;
 

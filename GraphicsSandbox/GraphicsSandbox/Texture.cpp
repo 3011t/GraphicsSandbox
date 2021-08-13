@@ -1,3 +1,5 @@
+// This file is inspired by TheCherno's OpenGL tutorial series.
+
 #include "Texture.h"
 
 // For image loading

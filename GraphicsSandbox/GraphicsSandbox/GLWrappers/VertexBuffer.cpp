@@ -1,3 +1,5 @@
+// This file is inspired by TheCherno's OpenGL tutorial series.
+
 #include "VertexBuffer.h"
 
 VertexBuffer::VertexBuffer(const void* data, uint32_t size) {

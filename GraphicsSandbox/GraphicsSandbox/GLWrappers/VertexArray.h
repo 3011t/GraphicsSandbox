@@ -1,3 +1,5 @@
+// This file is inspired by TheCherno's OpenGL tutorial series.
+
 #pragma once
 
 #include "VertexBuffer.h"

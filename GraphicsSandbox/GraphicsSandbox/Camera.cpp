@@ -1,3 +1,6 @@
+// The code in this file is mostly taken from https://github.com/OICW/NPGR019/blob/master/include/Camera.h (under zlib license)
+// with some changes made so that it fits into this project.
+
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>

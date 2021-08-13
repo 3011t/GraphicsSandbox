@@ -1,3 +1,5 @@
+// This file is inspired by TheCherno's OpenGL tutorial series.
+
 #include "IndexBuffer.h"
 
 IndexBuffer::IndexBuffer(const uint32_t* data, uint32_t count) : m_Count(count) {

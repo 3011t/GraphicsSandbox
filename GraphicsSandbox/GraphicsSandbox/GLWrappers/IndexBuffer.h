@@ -1,3 +1,5 @@
+// This file is inspired by TheCherno's OpenGL tutorial series.
+
 #pragma once
 
 // Library includes
@@ -5,7 +7,6 @@
 
 // stdlib includes
 #include <cstdint>
-
 
 class IndexBuffer {
 public:

@@ -1,3 +1,6 @@
+// The code in this file is mostly taken from https://github.com/OICW/NPGR019/blob/master/include/Camera.h (under zlib license)
+// with some changes made so that it fits into this project.
+
 #pragma once
 
 // Library includes
@@ -7,13 +10,13 @@
 #include <cstdint>
 
 enum class MovementDirection : uint32_t {
-	None = 0x00000000,
-	Forward = 0x00000001,
+	None     = 0x00000000,
+	Forward  = 0x00000001,
 	Backward = 0x00000002,
-	Left = 0x00000004,
-	Right = 0x00000008,
-	Up = 0x00000010,
-	Down = 0x00000020,
+	Left     = 0x00000004,
+	Right    = 0x00000008,
+	Up       = 0x00000010,
+	Down     = 0x00000020,
 };
 
 class Camera {
