@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <unordered_map>
 
 #include "GLWrappers/VertexArray.h"
@@ -95,7 +96,8 @@ enum class LightType : uint32_t {
 	PointLight, Directional
 };
 
-// Aligning this to the struct in the 05-fs was a massive pain
+// The reason why I'm using 4 dimensional vectors is so that
+// the struct is aligned with the struct in 05_fs_shadows.glsl
 struct Light {
 	float Range;
 	float Radius; // In Radians
@@ -138,7 +140,8 @@ private:
 
 	Camera m_Camera;
 
-	std::vector<Light> m_Lights;
+	std::array<Light, 8> m_Lights;
+	uint8_t m_LightCount = 0;
 
 	friend Renderer; // Yes, I'm letting Renderer touch the private parts of the Scene objects, it makes things easier. ;-)
 };

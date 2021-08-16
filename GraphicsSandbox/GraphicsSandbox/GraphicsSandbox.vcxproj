@@ -176,6 +176,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="GLWrappers\VertexArray.cpp" />
     <ClCompile Include="GLWrappers\VertexBuffer.cpp" />
+    <ClCompile Include="GLWrappers\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="GLWrappers\VertexArray.h" />
     <ClInclude Include="GLWrappers\VertexBuffer.h" />
     <ClInclude Include="GLWrappers\VertexBufferLayout.h" />
+    <ClInclude Include="GLWrappers\UniformBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

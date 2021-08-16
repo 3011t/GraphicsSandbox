@@ -17,6 +17,7 @@
 #include<unordered_map>
 
 struct Light;
+class UniformBuffer;
 
 class Shader {
 public:
@@ -34,7 +35,8 @@ public:
 	void SetUniform1i(const std::string& name, int32_t value);
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
-	uint32_t SetLights(const std::vector<Light>& lights);
+	void InitUniformBlock(const std::string& name, uint32_t size);
+	void SetUniformBlockData(const std::string& name, const void* data, uint32_t size);
 private:
 	uint32_t CompileShader(uint32_t type, const std::string& source);
 	std::string GetShaderSource(const std::string& filename);
@@ -46,4 +48,5 @@ private:
 	std::string m_VertexFilePath;
 	std::string m_FragmentFilePath;
 	std::unordered_map<std::string, int> m_UniformLocationCache;
+	std::unordered_map<std::string, UniformBuffer*> m_UniformBuffers;
 };

@@ -27,7 +27,8 @@ uniform float u_Shininess;
 uniform sampler2D u_DiffuseTexture;
 uniform bool u_HasTexture;
 
-// (Blinn-)Phong lighting functions
+// Blinn-Phong shading was taken from lecture slides for NPGR019
+
 float blinnPhongSpecular(
     vec3 normal,
     vec3 viewDir,
@@ -70,7 +71,7 @@ vec3 blinnPhong(
 }
 
 // Lights, provided via uniform buffer
-layout (std140) uniform u_BlockLights {
+layout (std140) uniform u_LightsBlock {
     Light lights[8];
 };
 
@@ -82,7 +83,7 @@ void main()
     if(texColour.a < 0.5) discard;
 
     // Ambient colour
-    colour = texColour * 0.2f;
+    colour = texColour * 0.1f;
     colour.w = 1.0;
 
     for (int i = 0; i < 2; ++i) {
@@ -95,9 +96,7 @@ void main()
                 u_Specular, v_Normal, v_ViewDir, lights[i].colour,
                 normalize(lights[i].direction), lights[i].power, u_Shininess), texColour.a);
         }
-        else if (distance(lights[i].position, v_Pos.xyz) <= lights[i].range &&
-            acos(dot(normalize(lights[i].direction), normalize(v_Pos.xyz))) <= lights[i].radius) {
-             
+        else if (distance(lights[i].position, v_Pos.xyz) <= lights[i].range) {
             colour += vec4(blinnPhong(vec3(0.0), texColour.rgb,
                 u_Specular, v_Normal, v_ViewDir, lights[i].colour,
                 normalize(lights[i].direction), lights[i].power, u_Shininess), texColour.a);

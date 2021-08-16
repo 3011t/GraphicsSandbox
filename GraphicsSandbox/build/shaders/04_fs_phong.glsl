@@ -14,6 +14,8 @@ uniform vec3 u_Specular;
 uniform float u_Shininess;
 uniform sampler2D u_DiffuseTexture;
 
+// Blinn-Phong shading was taken from lecture slides for NPGR019
+
 float blinn_phong_specular(
     vec3 normal,
     vec3 viewDir,

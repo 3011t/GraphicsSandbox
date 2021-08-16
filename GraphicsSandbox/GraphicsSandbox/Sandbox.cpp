@@ -141,7 +141,7 @@ Sandbox::Sandbox()
     m_Scene.AddShader("Depth", "shaders/03_vs_depth.glsl", "shaders/03_fs_depth.glsl");
     m_Scene.AddShader("Phong", "shaders/04_vs_phong.glsl", "shaders/04_fs_phong.glsl");
     m_Scene.AddShader("Shadows", "shaders/05_vs_shadows.glsl", "shaders/05_fs_shadows.glsl");
-    m_Scene.SetActiveShader("Phong"); // This sets the "default" shader for the program
+    m_Scene.SetActiveShader("Shadows"); // This sets the "default" shader for the program
     
     // Add sponza model
     m_Scene.AddModelFromFile("Sponza", "assets/sponza_scene/crytek-sponza.obj"); // https://clara.io/view/ff65ec60-497e-4685-8b3f-726988b347f3 I have renamed a few files
@@ -149,8 +149,8 @@ Sandbox::Sandbox()
     //m_Scene.AddModelFromFile("Lissajous", "assets/lissajous.obj"); // This is was generated from one of my assignments in an earlier course, it's not available online, because it takes up almost 500MB
     //m_Scene.AddInstance({"Lissajous", glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 6.0, 0.0))});
 
-    //m_Scene.AddLight({ 0.0, 0.0, 1.0, LightType::Directional, {0.0, 0.0, 0.0, 0.0}, {2.0, 8.0, 2.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
-    m_Scene.AddLight({ 100.0, glm::pi<float>() * 0.25, 0.7, LightType::PointLight, {0.0, 3.0, 0.0, 0.0}, {-1.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
+    m_Scene.AddLight({ 0.0, 0.0, 1.0, LightType::Directional, {0.0, 0.0, 0.0, 0.0}, {2.0, 8.0, 2.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
+    //m_Scene.AddLight({ 5.0, 0, 1.0, LightType::PointLight, {0.0, 3.0, 0.0, 0.0}, {0.0, 1.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 0.0} });
 
     glfwGetCursorPos(m_Window, &m_PrevMouseX, &m_PrevMouseY);
 
@@ -216,7 +216,7 @@ InputEvents Sandbox::ProcessInput(float dt) {
         dir |= (int)MovementDirection::Down;
     }
 
-    // Shader switching code
+    // Shader switching
     if (glfwGetKey(m_Window, GLFW_KEY_1) == GLFW_PRESS) {
         m_Scene.SetActiveShader("Basic");
     }

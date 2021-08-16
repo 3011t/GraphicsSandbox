@@ -24,7 +24,6 @@ void Renderer::Draw(const Mesh& mesh, const Shader& shader) const {
 
 void Renderer::Draw(Scene& scene) const {
 	// Bind shadow mapping shader
-	uint32_t lightsUBO;
 	
 	// Create a FB for each lightsource
 
@@ -42,7 +41,7 @@ void Renderer::Draw(Scene& scene) const {
 
 	// Put all lights and shadowmaps into the shader via uniforms
 	if (scene.m_ActiveShaderName == "Shadows") {
-		lightsUBO = shader->SetLights(scene.m_Lights);
+		shader->SetUniformBlockData("u_LightsBlock", &scene.m_Lights[0], scene.m_Lights.size() * sizeof(Light));
 	}
 
 	auto& instances = scene.m_ModelInstances;
@@ -69,6 +68,4 @@ void Renderer::Draw(Scene& scene) const {
 			glDrawElements(GL_TRIANGLES, model->Meshes[i]->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 		}
 	}
-
-	glDeleteBuffers(1, &lightsUBO);
 }

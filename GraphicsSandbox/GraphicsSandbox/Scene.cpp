@@ -57,12 +57,19 @@ void Scene::AddCamera(const Camera& camera) {
 }
 
 void Scene::AddLight(const Light& light) {
-	m_Lights.push_back(light);
+	if (m_LightCount >= 7) {
+		printf("The light buffer is already full!");
+		return;
+	}
+	else {
+		m_Lights[m_LightCount++] = light;
+	}
 }
 
 void Scene::AddShader(const std::string& shaderName, const std::string& vertShaderFilename, const std::string& fragShaderFilename) {
 	m_Shaders.push_back(new Shader(vertShaderFilename, fragShaderFilename));
 	m_ShaderIndices[shaderName] = m_Shaders.size() - 1;
+	m_Shaders[m_ShaderIndices[shaderName]]->InitUniformBlock("u_LightsBlock", 8 * sizeof(Light));
 }
 
 void Scene::ReloadShaders() {
